@@ -24,6 +24,7 @@ public:
     Coord clickEdge(int x, int y, int r);
     float valueEdge(int i, int j);
     void setEdgeValue(int i, int j, float f);
+    void drawArrow(QPainter * qp, int x1, int y1, int x2, int y2);
 };
 
 #endif // GRAPHE_H

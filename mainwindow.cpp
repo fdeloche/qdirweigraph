@@ -22,6 +22,7 @@ MainWindow::MainWindow()
 
     dwid = new DrawWidget();
     dwid->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    dwid->setStyleSheet("background-color:white;");
 
     QWidget *bottomFiller = new QWidget;
     bottomFiller->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
