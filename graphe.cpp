@@ -4,6 +4,10 @@
 #include <QDebug>
 #include <cmath>
 
+#include "tinyxml.h"
+#include "graphexml.h"
+
+
 Graphe::Graphe(){
     n=0;
 }
@@ -146,3 +150,46 @@ void Graphe::drawArrow(QPainter * qp, int x1, int y1, int x2, int y2){
 
       
 }
+
+void Graphe::saveGraph(QString & filename){
+    TiXmlDocument doc;
+    TiXmlDeclaration * decl = new TiXmlDeclaration( "1.0", "", "" );
+    TiXmlElement * elgraphe = new TiXmlElement( "Graph" );
+        //TiXmlText * text = new TiXmlText( num2str(10) );
+        elgraphe->SetAttribute("n", this->n);
+        doc.LinkEndChild( decl );
+        doc.LinkEndChild( elgraphe );
+
+     TiXmlElement * elnodes = new TiXmlElement("Nodes");
+     TiXmlElement * elnode;
+        for(int i=0; i<n; i++){
+            elnode = new TiXmlElement("Node");
+            elnode->SetAttribute("id", i);
+            elnode->SetAttribute("x", this->noeuds[i].getx());
+            elnode->SetAttribute("y", this->noeuds[i].gety());
+            elnodes->LinkEndChild(elnode);
+        }
+
+
+        elgraphe->LinkEndChild( elnodes );
+
+        TiXmlElement * elarrows = new TiXmlElement("Arrows");
+        TiXmlElement * elarrow;
+        for(int i=0; i<n; i++){
+            for(int j=0; j<n; j++){
+                if(this->adj[i][j]!=0){
+                    elarrow = new TiXmlElement("Arrow");
+                    elarrow->SetAttribute("From", i);
+                    elarrow->SetAttribute("To", j);
+                    elarrow->SetAttribute("Value", GrapheXml::num2str<float>(adj[i][j], 7));
+                    elarrows->LinkEndChild(elarrow);
+                }
+            }
+        }
+        elgraphe->LinkEndChild(elarrows);
+        doc.SaveFile(filename.toStdString());
+//Nodes
+        //Coeffs (adj)
+
+}
+

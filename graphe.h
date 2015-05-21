@@ -6,6 +6,9 @@
 #include "noeud.h"
 #include "coord.h"
 
+#include <QString>
+
+
 class Graphe{
 private:
     Noeud * noeuds;
@@ -24,7 +27,11 @@ public:
     Coord clickEdge(int x, int y, int r);
     float valueEdge(int i, int j);
     void setEdgeValue(int i, int j, float f);
+    void getEdgeValue(int i, int j){valueEdge(i, j);}
     void drawArrow(QPainter * qp, int x1, int y1, int x2, int y2);
+
+    void saveGraph(QString& filename);
+    //Graphe * openGraph(std::string &filename);
 };
 
 #endif // GRAPHE_H

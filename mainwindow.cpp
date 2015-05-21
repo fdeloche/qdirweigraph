@@ -5,6 +5,8 @@
 #include <QFile>
 #include "noeud.h"
 
+#include "graphexml.h"
+
 MainWindow::MainWindow()
 {
     graph = NULL;
@@ -193,31 +195,8 @@ void MainWindow::saveFile(QString filename){
         msgBox.exec();
         return;
     }
+    graph->saveGraph(filename);
 
-    QFile file( filename );
-    if ( file.open(QIODevice::WriteOnly) )
-    {
-        QTextStream stream( &file );
-        stream << "File to generate a graph" << endl;
-        stream << endl;
-        stream << "This file was generated automatically" << endl;
-        stream << endl;
-
-        stream << "Number of nodes : " << endl;
-        stream << endl;
-
-        stream << "n" << endl;
-        stream << graph->getn() << endl;
-
-        stream << endl << "Nodes" << endl;
-        graph->printNodes(stream);
-
-
-        stream << endl << "Coeffs" << endl;
-        graph->printCoeffs(stream);
-
-    }
-    file.close();
 }
 
 MainWindow::~MainWindow(){

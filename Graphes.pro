@@ -5,7 +5,8 @@ SOURCES += \
     noeud.cpp \
     graphe.cpp \
     mainwindow.cpp \
-    coord.cpp
+    coord.cpp \
+    graphexml.cpp
 
 HEADERS += \
     drawwidget.h \
@@ -13,4 +14,7 @@ HEADERS += \
     graphe.h \
     mainwindow.h \
     coord.h \
-    coord.h
+    coord.h \
+    graphexml.h
+
+LIBS+= -ltinyxml
