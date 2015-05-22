@@ -15,6 +15,58 @@ Graphe::Graphe(){
 Graphe::Graphe(Noeud * noeuds, float * * adj, int n):noeuds(noeuds), adj(adj), n(n){
 }
 
+Graphe::Graphe(QString &filename){
+    n=0;
+
+
+
+    int i, j, x, y;
+    TiXmlDocument doc(filename.toStdString());
+    if(doc.LoadFile()){
+        //TiXmlHandle hDoc(&doc);
+        TiXmlElement * pGraph;
+        pGraph = doc.FirstChildElement("Graph");
+        if(pGraph){
+            pGraph->QueryIntAttribute("n", &n);
+            noeuds = new Noeud[n];
+
+            adj = new float*[n];
+
+            for(int i=0; i<n; i++){
+                adj[i] = new float [n];
+                for(int j=0; j<n; j++){
+                    adj[i][j]=0.;
+                }
+            }
+            TiXmlElement * pRoot;
+            TiXmlElement * pChildren;
+            pRoot = pGraph->FirstChildElement("Nodes");
+            if(pRoot){
+                pChildren = pRoot->FirstChildElement("Node");
+                while(pChildren){
+                    pChildren->QueryIntAttribute("id", &i);
+
+                    pChildren->QueryIntAttribute("x", &x);
+                    pChildren->QueryIntAttribute("y", &y);
+                    noeuds[i]= Noeud(x,y);
+                    pChildren = pChildren->NextSiblingElement("Node");
+                }
+            }
+            pRoot = pGraph->FirstChildElement("Arrows");
+            if(pRoot){
+                pChildren = pRoot->FirstChildElement("Arrow");
+                while(pChildren){
+                    pChildren->QueryIntAttribute("From", &i);
+                    pChildren->QueryIntAttribute("To", &j);
+                    pChildren->QueryFloatAttribute("Value", &adj[i][j]);
+                    pChildren = pChildren->NextSiblingElement("Arrow");
+                }
+            }
+        }
+    }
+
+}
+
 void Graphe::draw(QPainter * qp){
     float w= qp->window().width()/100.;
    float  h= qp->window().height()/100.;

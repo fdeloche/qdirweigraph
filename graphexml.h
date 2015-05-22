@@ -1,10 +1,7 @@
 #ifndef GRAPHEXML_H
 #define GRAPHEXML_H
 
-#include "tinyxml.h"
-#include "graphe.h"
-#include <QString>
-
+#include <sstream>
 
 namespace GrapheXml{
 

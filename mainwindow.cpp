@@ -5,7 +5,9 @@
 #include <QFile>
 #include "noeud.h"
 
+//temp
 #include "graphexml.h"
+#include "tinyxml.h"
 
 MainWindow::MainWindow()
 {
@@ -64,7 +66,7 @@ void MainWindow::open()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                                   "./Tests/",
-                                                                  tr("Text files (*.txt)"));
+                                                                  tr("XML files (*.xml)"));
     if(!filename.isNull())
         this->openFile(filename);
 
@@ -74,7 +76,7 @@ void MainWindow::open()
 void MainWindow::saveAs(){
     QString filename = QFileDialog::getSaveFileName(this, tr("Open File"),
                                                     "./Tests",
-                                                    tr("Text files (*.txt)"));
+                                                    tr("XML files (*.xml)"));
     saveFile(filename);
 }
 
@@ -101,82 +103,10 @@ void MainWindow::createMenus()
 }
 
 void MainWindow::openFile(QString filename){
-
     //if *graph exists we delete it
     delete graph;
-    //QFile inputFile("/home/fdeloche/Desktop/workspaces/Qt/Graphes/test.txt");
-    QFile inputFile(filename);
-    int n;
-    Noeud * noeuds;
 
-    float * * adj;
-
-
-    if (inputFile.open(QIODevice::ReadOnly))
-    {
-       QTextStream in(&inputFile);
-       QString line = in.readLine();
-       while (line != "n")
-       {
-          line = in.readLine();
-       }
-       line = in.readLine();
-       qDebug() << qPrintable(" n : ") << qPrintable(line);
-       n = line.toInt();
-
-       noeuds = new Noeud[n];
-
-       while (line != "Noeuds" & line!="Nodes")
-       {
-          line = in.readLine();
-       }
-       QStringList coord;
-       int x, y;
-       int i = 0;
-       line = in.readLine();
-       while (line !="")
-       {
-          coord = line.split(";");
-          x = coord[0].toInt();
-          y = coord[1].toInt();
-          noeuds[i] = Noeud(x,y);
-          i++;
-          line = in.readLine();
-       }
-
-
-       while (line != "Coeffs")
-       {
-          line = in.readLine();
-       }
-       adj = new float*[n];
-
-           for(int i=0; i<n; i++){
-               adj[i] = new float [n];
-               for(int j=0; j<n; j++){
-                   adj[i][j]=0.;
-               }
-           }
-       i=0;
-       while (!in.atEnd())
-       {
-          line = in.readLine();
-          coord = line.split(";");
-          for(int j=0; j<n; j++){
-             adj[i][j] = coord[j].toFloat();
-             //qDebug() << adj[i][j];
-          }
-          //qDebug() << endl;
-          i++;
-
-       }
-
-       inputFile.close();
-    }else{
-        qDebug() << qPrintable("Erreur lors de la lecture du fichier texte");
-    }
-
-    graph = new Graphe(noeuds,adj, n);
+    graph = new Graphe(filename);
     dwid->setGraph(graph);
     dwid->update();
     //DrawWidget dwid(gr);

@@ -18,6 +18,7 @@ private:
 public:
     Graphe();
     Graphe(Noeud * noeuds, float * * adj, int n);
+    Graphe(QString& filename);
     void draw(QPainter * qp);
     int getn();
     void printNodes(QTextStream& stream);
