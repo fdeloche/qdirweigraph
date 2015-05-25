@@ -7,12 +7,30 @@
 #include "tinyxml.h"
 #include "graphexml.h"
 
+#include <stdlib.h>
 
+#include <QPainterPath>
+
+#include <locale>
 Graphe::Graphe(){
     n=0;
+    maxadj=0;
+}
+
+
+void Graphe::findMaxadj(){
+    float temp = 0;
+    for(int i=0; i<n; i++){
+       for(int j=0; j<n; j++){
+            if(adj[i][j] > temp)
+                temp=adj[i][j];
+       }
+    }
+    maxadj=temp;
 }
 
 Graphe::Graphe(Noeud * noeuds, float * * adj, int n):noeuds(noeuds), adj(adj), n(n){
+    this->findMaxadj();
 }
 
 Graphe::Graphe(QString &filename){
@@ -58,34 +76,48 @@ Graphe::Graphe(QString &filename){
                 while(pChildren){
                     pChildren->QueryIntAttribute("From", &i);
                     pChildren->QueryIntAttribute("To", &j);
-                    pChildren->QueryFloatAttribute("Value", &adj[i][j]);
+                    setlocale(LC_NUMERIC, "C");
+                    adj[i][j] = std::atof(pChildren->Attribute("Value"));
+                    qDebug() << i << j << pChildren->Attribute("Value");
                     pChildren = pChildren->NextSiblingElement("Arrow");
                 }
             }
         }
     }
+    this->findMaxadj();
+    qDebug() << maxadj;
 
 }
 
 void Graphe::draw(QPainter * qp){
     float w= qp->window().width()/100.;
-   float  h= qp->window().height()/100.;
-   //qDebug() << w << qPrintable(" ") << h;
-   qp->setBrush(Qt::black);
-   int x, y;
-   int r = std::max(4, (int) (w*0.6));
+    float  h= qp->window().height()/100.;
+    //qDebug() << w << qPrintable(" ") << h;
+    qp->setBrush(Qt::black);
+    int x, y;
+    int r = std::max(4, (int) (w*0.6));
     for(int i =0; i<this->n; i++){
         x = (int) noeuds[i].getx()*w;
         y= (int) noeuds[i].gety()*h;
         qp->drawEllipse(x-1, y-1, r, r);
         qp->drawText(x-5, y-5, QString::number(i));
     }
+    float alpha;
+    float thick;
+    float ratio;
     for(int i =0; i<this->n; i++){
         for(int j =0; j<this->n; j++){
             if(adj[i][j] != 0.){
-                qp->setPen(QPen(Qt::black, adj[i][j]*2., Qt::SolidLine));
-
-                this->drawArrow(qp, (int) noeuds[i].getx()*w, (int) noeuds[i].gety()*h,(int) noeuds[j].getx()*w, (int) noeuds[j].gety()*h);
+                if(maxadj!=0){
+                    //if adj[i][j]<0.3 maxadj, change alpha, else change thickness (grosso modo)
+                    ratio = adj[i][j]/maxadj;
+                    alpha = (ratio<0.3) ? 255*(adj[i][j]/(0.3*maxadj)) : 255;
+                    thick = (ratio<0.2) ? 0.5 : adj[i][j]/maxadj*3.2;
+                    qp->setPen(QPen(QColor(0, 0, 0, alpha), thick, Qt::SolidLine));
+                    qp->setBrush(Qt::NoBrush);
+                    if(i!=j)
+                        this->drawArrow(qp, (int) noeuds[i].getx()*w, (int) noeuds[i].gety()*h,(int) noeuds[j].getx()*w, (int) noeuds[j].gety()*h);
+                }
             }
         }
     }
@@ -165,6 +197,7 @@ float Graphe::valueEdge(int i, int j){
 
 void Graphe::setEdgeValue(int i, int j, float f){
     adj[i][j] = f;
+    findMaxadj();
 }
 
 
@@ -173,6 +206,7 @@ void Graphe::drawArrow(QPainter * qp, int x1, int y1, int x2, int y2){
 
 
     float alpha = (float) atan2(y2 - y1, x2 - x1);
+    float dalpha = 20./180*3.14159;
     float w= qp->window().width()/100.;
     float h= qp->window().height()/100.;
     w = std::min(w, h);
@@ -181,24 +215,28 @@ void Graphe::drawArrow(QPainter * qp, int x1, int y1, int x2, int y2){
 
     float dy = y2 - y1;
     float dx = x2 - x1;
-
-    if(dx*dx+ dy *dy  < 100.*w*w){
-      dx = 0.15*dx;
-      dy = 0.15*dy;
-    }else{
+    float dy2, dx2;
+    float r0 = sqrt(dx*dx+dy*dy);
+    if(r0 < 3*w)
+            r = 0.15*sqrt(dx*dx+dy*dy);
 
       dx = r*1.3;
-      dx *= cos(alpha);
+      dx2 = dx*cos(alpha-dalpha);
+      dx *= cos(alpha+dalpha);
       dy = r*1.3 ;
+      dy2 = dy*sin(alpha-dalpha);
       dy *= sin(alpha);
-    }
+    float r2 = std::min(5.f, r0/20.f);
+    QPainterPath myPath;
+    myPath.moveTo(x1+dx, y1+dy);
+    myPath.cubicTo(x1+r2*dx, y1+r2*dy, x2-r2*dx2, y2-r2*dy2, x2 - dx2, y2 - dy2);
 
+     qp->drawPath(myPath);
 
+    //qp->drawLine(x1+dx, y1+dy, x2-dx, y2-dy);
 
-    qp->drawLine(x1+dx, y1+dy, x2-dx, y2-dy);
-
-    qp->drawLine(x2-dx, y2-dy, x2-dx+(int) (r*cos(alpha + 3.1415 - beta)), y2 -dy + (int) (r*sin(alpha + 3.1415 - beta)));
-    qp->drawLine(x2-dx, y2-dy, x2-dx+(int) (r*cos(alpha + 3.1415 + beta)), y2 - dy + (int) (r*sin(alpha + 3.1415 + beta)));
+    qp->drawLine(x2-dx2, y2-dy2, x2-dx2+(int) (r*cos(alpha - dalpha + 3.1415 - beta)), y2 -dy2 + (int) (r*sin(alpha - dalpha + 3.1415 - beta)));
+    qp->drawLine(x2-dx2, y2-dy2, x2-dx2+(int) (r*cos(alpha - dalpha + 3.1415 + beta)), y2 - dy2 + (int) (r*sin(alpha - dalpha + 3.1415 + beta)));
 
       
 }

@@ -14,6 +14,8 @@ private:
     Noeud * noeuds;
     float * * adj;
     int n;
+    float maxadj;
+    void findMaxadj();
 
 public:
     Graphe();
