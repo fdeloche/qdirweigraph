@@ -112,7 +112,7 @@ void Graphe::draw(QPainter * qp){
                     //if adj[i][j]<0.3 maxadj, change alpha, else change thickness (grosso modo)
                     ratio = adj[i][j]/maxadj;
                     alpha = (ratio<0.3) ? 255*(adj[i][j]/(0.3*maxadj)) : 255;
-                    thick = (ratio<0.2) ? 0.5 : adj[i][j]/maxadj*3.2;
+                    thick = (ratio<0.2) ? 0.5 : adj[i][j]/maxadj*5.;
                     qp->setPen(QPen(QColor(0, 0, 0, alpha), thick, Qt::SolidLine));
                     qp->setBrush(Qt::NoBrush);
                     if(i!=j)

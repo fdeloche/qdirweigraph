@@ -3,9 +3,9 @@
 
 #include <QWidget>
 #include <QPainter>
-#include <graphe.h>
+#include "graphe.h"
 #include <QMouseEvent>
-#include <noeud.h>
+#include "noeud.h"
 
 class DrawWidget : public QWidget{
 private:

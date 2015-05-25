@@ -34,6 +34,7 @@ public:
     void drawArrow(QPainter * qp, int x1, int y1, int x2, int y2);
 
     void saveGraph(QString& filename);
+    float getMaxAdj(){return maxadj;}
     //Graphe * openGraph(std::string &filename);
 };
 

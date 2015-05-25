@@ -7,6 +7,8 @@
 #include "graphe.h"
 #include <QString>
 
+#include "graphscale.h"
+
 class QAction;
 class QActionGroup;
 class QLabel;
@@ -38,6 +40,7 @@ private:
     QAction *openAct;
     QAction * saveAct;
     DrawWidget * dwid;
+    GraphScale * gscale;
     Graphe * graph;
     //QLabel *infoLabel;
 

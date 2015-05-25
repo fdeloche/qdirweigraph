@@ -6,7 +6,8 @@ SOURCES += \
     graphe.cpp \
     mainwindow.cpp \
     coord.cpp \
-    graphexml.cpp
+    graphexml.cpp \
+    graphscale.cpp
 
 HEADERS += \
     drawwidget.h \
@@ -15,6 +16,7 @@ HEADERS += \
     mainwindow.h \
     coord.h \
     coord.h \
-    graphexml.h
+    graphexml.h \
+    graphscale.h
 
 LIBS+= -ltinyxml

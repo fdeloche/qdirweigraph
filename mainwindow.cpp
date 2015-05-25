@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QFile>
 #include "noeud.h"
+#include "graphscale.h"
 
 //temp
 #include "graphexml.h"
@@ -28,16 +29,23 @@ MainWindow::MainWindow()
     dwid->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     dwid->setStyleSheet("background-color:white;");
 
+
+    gscale = new GraphScale();
+    gscale->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
+    gscale->setStyleSheet("background-color:white");
+
     QWidget *bottomFiller = new QWidget;
     bottomFiller->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     //bottomFiller->setMaximumHeight(50);
 
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->setMargin(5);
-    layout->addWidget(topFiller);
-    layout->addWidget(dwid);
-    layout->addWidget(bottomFiller);
+    QGridLayout *layout = new QGridLayout;
+    layout->setMargin(2);
+    layout->addWidget(topFiller, 0, 0, 1, 2);
+    layout->addWidget(gscale, 1, 0);
+    layout->addWidget(dwid, 1, 1);
+    layout->addWidget(bottomFiller, 2, 0, 1, 2);
     //layout->setStretch(1, 2);
+    layout->setColumnMinimumWidth(0, 60);
     widget->setLayout(layout);
 
     createActions();
@@ -108,7 +116,12 @@ void MainWindow::openFile(QString filename){
 
     graph = new Graphe(filename);
     dwid->setGraph(graph);
+    gscale->setMaxvalue(graph->getMaxAdj());
+
     dwid->update();
+    gscale->update();
+
+
     //DrawWidget dwid(gr);
     //dwid.show();
 
