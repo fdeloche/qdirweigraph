@@ -28,6 +28,7 @@ protected:
 private slots:
     void open();
     void saveAs();
+    void changeScale();
 
 private:
     void openFile(QString filename);
@@ -37,8 +38,12 @@ private:
 
 
     QMenu *fileMenu;
+    QMenu *editMenu;
+
     QAction *openAct;
     QAction * saveAct;
+    QAction * modifyScale;
+
     DrawWidget * dwid;
     GraphScale * gscale;
     Graphe * graph;

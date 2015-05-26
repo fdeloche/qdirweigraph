@@ -77,15 +77,23 @@ Graphe::Graphe(QString &filename){
                     pChildren->QueryIntAttribute("From", &i);
                     pChildren->QueryIntAttribute("To", &j);
                     setlocale(LC_NUMERIC, "C");
-                    adj[i][j] = std::atof(pChildren->Attribute("Value"));
-                    qDebug() << i << j << pChildren->Attribute("Value");
+                    if(pChildren)
+                        adj[i][j] = std::atof(pChildren->Attribute("Value"));
+                    //qDebug() << i << j << pChildren->Attribute("Value");
                     pChildren = pChildren->NextSiblingElement("Arrow");
                 }
             }
+            this->findMaxadj();
+            pRoot = pGraph ->FirstChildElement("Config");
+            if(pRoot){
+                pChildren = pRoot;
+                setlocale(LC_NUMERIC, "C");
+                if(pChildren->Attribute("ScaleMax"))
+                    maxadj=std::atof(pChildren->Attribute("ScaleMax"));
+
+            }
         }
     }
-    this->findMaxadj();
-    qDebug() << maxadj;
 
 }
 
@@ -220,13 +228,13 @@ void Graphe::drawArrow(QPainter * qp, int x1, int y1, int x2, int y2){
     if(r0 < 3*w)
             r = 0.15*sqrt(dx*dx+dy*dy);
 
-      dx = r*1.3;
+      dx = r*1.6;
       dx2 = dx*cos(alpha-dalpha);
       dx *= cos(alpha+dalpha);
-      dy = r*1.3 ;
+      dy = r*1.6 ;
       dy2 = dy*sin(alpha-dalpha);
       dy *= sin(alpha);
-    float r2 = std::min(5.f, r0/20.f);
+    float r2 = std::min(3.f, r0/20.f);
     QPainterPath myPath;
     myPath.moveTo(x1+dx, y1+dy);
     myPath.cubicTo(x1+r2*dx, y1+r2*dy, x2-r2*dx2, y2-r2*dy2, x2 - dx2, y2 - dy2);

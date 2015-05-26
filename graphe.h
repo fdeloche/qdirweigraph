@@ -35,6 +35,7 @@ public:
 
     void saveGraph(QString& filename);
     float getMaxAdj(){return maxadj;}
+    float setMaxAdj(float value){maxadj=value;}
     //Graphe * openGraph(std::string &filename);
 };
 

@@ -23,9 +23,11 @@ void GraphScale::paintEvent(QPaintEvent * event){
         thick = (ratio<0.2) ? 0.5 : ratio*maxthick;
         painter.setPen(QPen(QColor(0, 0, 0, alpha), thick, Qt::SolidLine));
         painter.drawLine(15, y, 45, y);
-        y+=h/10;
+        y+=h/12;
         painter.drawText(20, y, QString::number(ratio*maxvalue, 'g', 3));
-        y += h/10;
+        y += h/12;
+        if(i==20)
+            i=30;
         }
     }
 }

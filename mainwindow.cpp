@@ -6,6 +6,8 @@
 #include "noeud.h"
 #include "graphscale.h"
 
+#include <QInputDialog>
+
 //temp
 #include "graphexml.h"
 #include "tinyxml.h"
@@ -101,6 +103,10 @@ void MainWindow::createActions()
     saveAct->setShortcuts(QKeySequence::SaveAs);
     saveAct->setStatusTip(tr("Save graph as..."));
     connect(saveAct, SIGNAL(triggered()), this, SLOT(saveAs()));
+
+    modifyScale = new QAction(tr("&Change scale"), this);
+    modifyScale->setStatusTip(tr("Change scale"));
+    connect(modifyScale, SIGNAL(triggered()), this, SLOT(changeScale()));
 }
 
 void MainWindow::createMenus()
@@ -108,6 +114,9 @@ void MainWindow::createMenus()
     fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(openAct);
     fileMenu->addAction(saveAct);
+
+    editMenu = menuBar()->addMenu(tr("&Edit"));
+    editMenu ->addAction(modifyScale);
 }
 
 void MainWindow::openFile(QString filename){
@@ -129,6 +138,17 @@ void MainWindow::openFile(QString filename){
 
     //int rep = qapp.exec();
 
+}
+
+void MainWindow::changeScale(){
+    bool ok;
+    if(graph){
+        double s = QInputDialog::getDouble(this, "Set value", "Scale : [ 0  - ... : ", gscale->getMaxvalue(), 0, 1000, 2, &ok);
+        gscale->setMaxvalue((float) s);
+        graph->setMaxAdj((float) s);
+        dwid->update();
+        gscale ->update();
+    }
 }
 
 void MainWindow::saveFile(QString filename){

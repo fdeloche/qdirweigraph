@@ -16,6 +16,10 @@ public:
         maxvalue = value;
     }
 
+    float getMaxvalue(){
+        return maxvalue;
+    }
+
     protected:
     void paintEvent(QPaintEvent * event);
 };
