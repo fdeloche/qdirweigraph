@@ -16,6 +16,8 @@ public:
         maxvalue = value;
     }
 
+    void paint(QPainter * qp);
+
     float getMaxvalue(){
         return maxvalue;
     }

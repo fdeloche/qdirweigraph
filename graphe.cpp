@@ -219,7 +219,7 @@ void Graphe::drawArrow(QPainter * qp, int x1, int y1, int x2, int y2){
     float h= qp->window().height()/100.;
     w = std::min(w, h);
     float beta = 0.4;
-    float r = std::min(w*3, (float) 10.);
+    float r = std::min(w*3, (float) 7.);
 
     float dy = y2 - y1;
     float dx = x2 - x1;
@@ -234,7 +234,7 @@ void Graphe::drawArrow(QPainter * qp, int x1, int y1, int x2, int y2){
       dy = r*1.6 ;
       dy2 = dy*sin(alpha-dalpha);
       dy *= sin(alpha);
-    float r2 = std::min(3.f, r0/20.f);
+    float r2 = std::min(2.5f, 1f+r0/10.f);
     QPainterPath myPath;
     myPath.moveTo(x1+dx, y1+dy);
     myPath.cubicTo(x1+r2*dx, y1+r2*dy, x2-r2*dx2, y2-r2*dy2, x2 - dx2, y2 - dy2);

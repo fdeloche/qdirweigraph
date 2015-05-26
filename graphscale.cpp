@@ -9,8 +9,12 @@ GraphScale::GraphScale()
 
 void GraphScale::paintEvent(QPaintEvent * event){
     QPainter painter(this);
-    int w = painter.window().width();
-    int h = painter.window().height()-40;
+    this->paint(&painter);
+}
+
+void GraphScale::paint(QPainter *qp){
+    int w = qp->window().width();
+    int h = qp->window().height()-40;
     int y = 20;
 
     float ratio, alpha, thick;
@@ -21,10 +25,10 @@ void GraphScale::paintEvent(QPaintEvent * event){
         ratio = i/100.;
         alpha = (ratio<0.3) ? 255*ratio/0.3 : 255;
         thick = (ratio<0.2) ? 0.5 : ratio*maxthick;
-        painter.setPen(QPen(QColor(0, 0, 0, alpha), thick, Qt::SolidLine));
-        painter.drawLine(15, y, 45, y);
+        qp->setPen(QPen(QColor(0, 0, 0, alpha), thick, Qt::SolidLine));
+        qp->drawLine(15, y, 45, y);
         y+=h/12;
-        painter.drawText(20, y, QString::number(ratio*maxvalue, 'g', 3));
+        qp->drawText(20, y, QString::number(ratio*maxvalue, 'g', 3));
         y += h/12;
         if(i==20)
             i=30;

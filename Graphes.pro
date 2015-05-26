@@ -1,4 +1,5 @@
-QT += widgets
+QT += widgets \
+    svg
 SOURCES += \
     main.cpp \
     drawwidget.cpp \

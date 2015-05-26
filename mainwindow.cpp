@@ -12,6 +12,8 @@
 #include "graphexml.h"
 #include "tinyxml.h"
 
+#include <QSvgGenerator>
+
 MainWindow::MainWindow()
 {
     graph = NULL;
@@ -84,12 +86,31 @@ void MainWindow::open()
 }
 
 void MainWindow::saveAs(){
-    QString filename = QFileDialog::getSaveFileName(this, tr("Open File"),
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save file"),
                                                     "./Tests",
                                                     tr("XML files (*.xml)"));
     saveFile(filename);
 }
 
+void MainWindow::saveAsSvg(){
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save as svg"),
+                                                    "./Tests",
+                                                    tr("SVG files (*.svg)"));
+    if(graph){
+    QSvgGenerator generator;
+        generator.setFileName(filename);
+        generator.setSize(QSize(600, 400));
+        generator.setViewBox(QRect(0, 0, 600, 400));
+        generator.setTitle(tr("Graphe"));
+        generator.setDescription(tr("An SVG drawing created by the Qt SVG Generator "));
+
+        QPainter painter;
+        painter.begin(&generator);
+        graph->draw(&painter);
+        gscale->paint(&painter);
+        painter.end();
+    }
+}
 
 void MainWindow::createActions()
 {
@@ -107,6 +128,10 @@ void MainWindow::createActions()
     modifyScale = new QAction(tr("&Change scale"), this);
     modifyScale->setStatusTip(tr("Change scale"));
     connect(modifyScale, SIGNAL(triggered()), this, SLOT(changeScale()));
+
+    saveSvgAct = new QAction(tr("&Export as svg"), this);
+    saveSvgAct->setStatusTip(tr("Export as SVG"));
+    connect(saveSvgAct, SIGNAL(triggered()), this, SLOT(saveAsSvg()));
 }
 
 void MainWindow::createMenus()
@@ -114,6 +139,7 @@ void MainWindow::createMenus()
     fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(openAct);
     fileMenu->addAction(saveAct);
+    fileMenu->addAction(saveSvgAct);
 
     editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu ->addAction(modifyScale);
