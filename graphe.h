@@ -16,11 +16,14 @@ private:
     int n;
     float maxadj;
     void findMaxadj();
+    QString title;
 
 public:
     Graphe();
     Graphe(Noeud * noeuds, float * * adj, int n);
     Graphe(QString& filename);
+    QString getTitle(){return title;}
+
     void draw(QPainter * qp);
     int getn();
     void printNodes(QTextStream& stream);

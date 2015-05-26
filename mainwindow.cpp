@@ -14,6 +14,9 @@
 
 #include <QSvgGenerator>
 
+#include <QTextStream>
+#include <QFile>
+
 MainWindow::MainWindow()
 {
     graph = NULL;
@@ -79,9 +82,10 @@ void MainWindow::open()
     QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                                   "./Tests/",
                                                                   tr("XML files (*.xml)"));
-    if(!filename.isNull())
+    if(!filename.isNull()){
         this->openFile(filename);
-
+        this->update();
+    }
     //infoLabel->setText(tr("Invoked <b>File|Open</b>"));
 }
 
@@ -96,6 +100,10 @@ void MainWindow::saveAsSvg(){
     QString filename = QFileDialog::getSaveFileName(this, tr("Save as svg"),
                                                     "./Tests",
                                                     tr("SVG files (*.svg)"));
+    saveSvg(filename);
+}
+
+void MainWindow::saveSvg(QString filename){
     if(graph){
     QSvgGenerator generator;
         generator.setFileName(filename);
@@ -129,9 +137,13 @@ void MainWindow::createActions()
     modifyScale->setStatusTip(tr("Change scale"));
     connect(modifyScale, SIGNAL(triggered()), this, SLOT(changeScale()));
 
-    saveSvgAct = new QAction(tr("&Export as svg"), this);
+    saveSvgAct = new QAction(tr("&Export current graph as svg"), this);
     saveSvgAct->setStatusTip(tr("Export as SVG"));
     connect(saveSvgAct, SIGNAL(triggered()), this, SLOT(saveAsSvg()));
+
+    openAndSaveSvgAct = new QAction(tr("&Export multiple graphs as SVG"), this);
+    openAndSaveSvgAct->setStatusTip((tr("Open selected graphs and export them as svg")));
+    connect(openAndSaveSvgAct, SIGNAL(triggered()), this, SLOT(openAndSaveSvg()));
 }
 
 void MainWindow::createMenus()
@@ -140,9 +152,13 @@ void MainWindow::createMenus()
     fileMenu->addAction(openAct);
     fileMenu->addAction(saveAct);
     fileMenu->addAction(saveSvgAct);
+    fileMenu->addAction(openAndSaveSvgAct);
+
 
     editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu ->addAction(modifyScale);
+
+
 }
 
 void MainWindow::openFile(QString filename){
@@ -153,10 +169,6 @@ void MainWindow::openFile(QString filename){
     dwid->setGraph(graph);
     gscale->setMaxvalue(graph->getMaxAdj());
 
-    dwid->update();
-    gscale->update();
-
-
     //DrawWidget dwid(gr);
     //dwid.show();
 
@@ -164,6 +176,11 @@ void MainWindow::openFile(QString filename){
 
     //int rep = qapp.exec();
 
+}
+
+void MainWindow::update(){
+    dwid->update();
+    gscale->update();
 }
 
 void MainWindow::changeScale(){
@@ -185,6 +202,42 @@ void MainWindow::saveFile(QString filename){
         return;
     }
     graph->saveGraph(filename);
+
+}
+
+void MainWindow::openAndSaveSvg(){
+    QStringList sList = QFileDialog::getOpenFileNames(this, tr("Open files"), "./Tests",
+                                                        tr("XML files (*.xml)"));
+    QString folder = sList[0].section('/', 0, -2);
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save report"),
+                                                    folder,
+                                                    tr("HTML files (*.html)"));
+    folder = filename.section('/', 0, -2);
+
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly)) {
+        std::cerr << "Cannot open file for writing: "
+                  << qPrintable(file.errorString()) << std::endl;
+        return;
+    }
+
+    QString title = QInputDialog::getText(this,"Set title", "Title : ");
+
+    QTextStream out(&file);
+    out << "<!DOCTYPE html>" << endl << "<html><body><h1>";
+    out << title << "</h1>" << endl;
+
+    for (int i = 0; i < sList.size(); ++i){
+         openFile(sList[i]);
+         sList[i].replace(".xml", "");
+         sList[i] = sList[i].section('/', -1);
+         saveSvg(folder + "/" + sList[i] +".svg");
+         out << "<p><b>" << graph->getTitle() << "</b></p>";
+         out << "<embed type='image/svg+xml' src='" << "./" + sList[i] +".svg" << "' />" << endl;
+    }
+
+    out << "</body> </html>";
+    file.close();
 
 }
 

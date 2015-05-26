@@ -30,9 +30,12 @@ private slots:
     void saveAs();
     void changeScale();
     void saveAsSvg();
+    void openAndSaveSvg();
 
 private:
     void openFile(QString filename);
+    void update();
+    void saveSvg(QString filename);
     void saveFile(QString filename);
     void createActions();
     void createMenus();
@@ -45,6 +48,7 @@ private:
     QAction * saveAct;
     QAction * modifyScale;
     QAction * saveSvgAct;
+    QAction * openAndSaveSvgAct;
 
     DrawWidget * dwid;
     GraphScale * gscale;

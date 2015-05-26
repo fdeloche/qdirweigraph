@@ -15,6 +15,7 @@
 Graphe::Graphe(){
     n=0;
     maxadj=0;
+    title="";
 }
 
 
@@ -46,6 +47,8 @@ Graphe::Graphe(QString &filename){
         pGraph = doc.FirstChildElement("Graph");
         if(pGraph){
             pGraph->QueryIntAttribute("n", &n);
+            if(pGraph->Attribute("Title"))
+                title = QString(pGraph->Attribute("Title"));
             noeuds = new Noeud[n];
 
             adj = new float*[n];
@@ -107,8 +110,20 @@ void Graphe::draw(QPainter * qp){
     for(int i =0; i<this->n; i++){
         x = (int) noeuds[i].getx()*w;
         y= (int) noeuds[i].gety()*h;
-        qp->drawEllipse(x-1, y-1, r, r);
-        qp->drawText(x-5, y-5, QString::number(i));
+        qp->drawEllipse(x-r/2+4, y-r/2-4, r, r);
+        if(x<w*50.){
+            if(y<h*50.){
+                qp->drawText(x-9, y-9, QString::number(i));
+            }else{
+                qp->drawText(x-9, y+9, QString::number(i));
+            }
+        }else{
+            if(y<h*50.){
+                qp->drawText(x+9, y-9, QString::number(i));
+             }else{
+                qp->drawText(x+9, y+9, QString::number(i));
+            }
+        }
     }
     float alpha;
     float thick;
@@ -225,7 +240,7 @@ void Graphe::drawArrow(QPainter * qp, int x1, int y1, int x2, int y2){
     float dx = x2 - x1;
     float dy2, dx2;
     float r0 = sqrt(dx*dx+dy*dy);
-    if(r0 < 3*w)
+    if(r0 < 15)
             r = 0.15*sqrt(dx*dx+dy*dy);
 
       dx = r*1.6;
@@ -233,8 +248,8 @@ void Graphe::drawArrow(QPainter * qp, int x1, int y1, int x2, int y2){
       dx *= cos(alpha+dalpha);
       dy = r*1.6 ;
       dy2 = dy*sin(alpha-dalpha);
-      dy *= sin(alpha);
-    float r2 = std::min(2.5f, 1f+r0/10.f);
+      dy *= sin(alpha+dalpha);
+    float r2 = std::min(2.5f, 0.5f+r0/10.f);
     QPainterPath myPath;
     myPath.moveTo(x1+dx, y1+dy);
     myPath.cubicTo(x1+r2*dx, y1+r2*dy, x2-r2*dx2, y2-r2*dy2, x2 - dx2, y2 - dy2);
