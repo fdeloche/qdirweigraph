@@ -8,6 +8,11 @@
 
 #include <QString>
 
+#define COLORGRAPH 1
+#define BLACKGRAPH 0
+
+#define GREENRED 0
+#define BLUEPURPLE 1
 
 class Graphe{
 private:
@@ -20,6 +25,8 @@ private:
     int color_r = 0;
     int color_b = 0;
     int color_v = 0;
+    int type = COLORGRAPH;
+    int colorscale = BLUEPURPLE;
 
 public:
     Graphe();

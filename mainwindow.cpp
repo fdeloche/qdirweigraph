@@ -107,8 +107,8 @@ void MainWindow::saveSvg(QString filename){
     if(graph){
     QSvgGenerator generator;
         generator.setFileName(filename);
-        generator.setSize(QSize(600, 400));
-        generator.setViewBox(QRect(0, 0, 600, 400));
+        generator.setSize(QSize(600, 600));
+        generator.setViewBox(QRect(0, 0, 600, 600));
         generator.setTitle(tr("Graphe"));
         generator.setDescription(tr("An SVG drawing created by the Qt SVG Generator "));
 

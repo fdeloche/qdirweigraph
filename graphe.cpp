@@ -117,18 +117,18 @@ void Graphe::draw(QPainter * qp){
     for(int i =0; i<this->n; i++){
         x = (int) noeuds[i].getx()*w;
         y= (int) noeuds[i].gety()*h;
-        qp->drawEllipse(x-r/2+4, y-r/2-4, r, r);
+        qp->drawEllipse(x-r/2, y-r/2, r, r);
         if(x<w*50.){
             if(y<h*50.){
-                qp->drawText(x-9, y-9, QString::number(i));
+                qp->drawText(x-13, y-5, QString::number(i));
             }else{
-                qp->drawText(x-9, y+9, QString::number(i));
+                qp->drawText(x-13, y+13, QString::number(i));
             }
         }else{
             if(y<h*50.){
-                qp->drawText(x+9, y-9, QString::number(i));
+                qp->drawText(x+5, y-5, QString::number(i));
              }else{
-                qp->drawText(x+9, y+9, QString::number(i));
+                qp->drawText(x+5, y+13, QString::number(i));
             }
         }
     }
@@ -139,12 +139,35 @@ void Graphe::draw(QPainter * qp){
         for(int j =0; j<this->n; j++){
             if(adj[i][j] != 0.){
                 if(maxadj!=0){
-                    //if adj[i][j]<0.3 maxadj, change alpha, else change thickness (grosso modo)
+
+                    if(type==COLORGRAPH){
+                     //if adj[i][j]<0.5 maxadj, change alpha, >0.6 ou >0.5change color < 1 change color and thickness
+                    ratio = adj[i][j]/maxadj;
+                    alpha = (ratio<0.8) ? 255*(adj[i][j]/(0.8*maxadj)) : 255;
+                    if(colorscale==GREENRED){
+                    color_r = (ratio<0.5) ? 0 : 255.*(ratio-0.3)/0.7;
+                    color_v = (ratio<0.5) ? 175 : 175 - 175*(ratio-0.3)/0.7;
+                    color_b = 0;
+                    }
+                    if(colorscale==BLUEPURPLE){
+                        color_r = (ratio<0.6) ? 40 : 40 + 215.*(ratio-0.5)/0.5;
+                        color_v=100;
+                        //color_v = (ratio<0.3) ? 175 : 175 - 175*(ratio-0.3)/0.7;
+                        color_b = (ratio<0.6) ? 200 : 200 + 55.*(ratio-0.5)/0.5;
+                    }
+                    thick = (ratio<0.2) ? 0.5 : adj[i][j]/maxadj*2.5;
+                    thick = (ratio<0.6) ? thick : adj[i][j]/maxadj*6. - 2.1f;
+                    qp->setPen(QPen(QColor(color_r, color_v, color_b, alpha), thick, Qt::SolidLine));
+                    qp->setBrush(Qt::NoBrush);
+                    }
+                    if(type==BLACKGRAPH){
+                        //if adj[i][j]<0.3 maxadj, change alpha, else change thickness (grosso modo)
                     ratio = adj[i][j]/maxadj;
                     alpha = (ratio<0.3) ? 255*(adj[i][j]/(0.3*maxadj)) : 255;
                     thick = (ratio<0.2) ? 0.5 : adj[i][j]/maxadj*5.;
                     qp->setPen(QPen(QColor(color_r, color_v, color_b, alpha), thick, Qt::SolidLine));
                     qp->setBrush(Qt::NoBrush);
+                    }
                     if(i!=j)
                         this->drawArrow(qp, (int) noeuds[i].getx()*w, (int) noeuds[i].gety()*h,(int) noeuds[j].getx()*w, (int) noeuds[j].gety()*h);
                 }
@@ -256,7 +279,7 @@ void Graphe::drawArrow(QPainter * qp, int x1, int y1, int x2, int y2){
       dy = r*1.6 ;
       dy2 = dy*sin(alpha-dalpha);
       dy *= sin(alpha+dalpha);
-    float r2 = std::min(2.5f, 0.5f+r0/10.f);
+    float r2 = std::min(5.f, 0.5f+r0/10.f);
     QPainterPath myPath;
     myPath.moveTo(x1+dx, y1+dy);
     myPath.cubicTo(x1+r2*dx, y1+r2*dy, x2-r2*dx2, y2-r2*dy2, x2 - dx2, y2 - dy2);
