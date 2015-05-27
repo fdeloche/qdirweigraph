@@ -49,6 +49,13 @@ Graphe::Graphe(QString &filename){
             pGraph->QueryIntAttribute("n", &n);
             if(pGraph->Attribute("Title"))
                 title = QString(pGraph->Attribute("Title"));
+            if(pGraph->Attribute("Color")){
+                if(pGraph->Attribute("Color")[0] == 'r')
+                    color_r = 200;
+                if(pGraph->Attribute("Color")[0] == 'b')
+                    color_b = 200;
+
+            }
             noeuds = new Noeud[n];
 
             adj = new float*[n];
@@ -136,7 +143,7 @@ void Graphe::draw(QPainter * qp){
                     ratio = adj[i][j]/maxadj;
                     alpha = (ratio<0.3) ? 255*(adj[i][j]/(0.3*maxadj)) : 255;
                     thick = (ratio<0.2) ? 0.5 : adj[i][j]/maxadj*5.;
-                    qp->setPen(QPen(QColor(0, 0, 0, alpha), thick, Qt::SolidLine));
+                    qp->setPen(QPen(QColor(color_r, color_v, color_b, alpha), thick, Qt::SolidLine));
                     qp->setBrush(Qt::NoBrush);
                     if(i!=j)
                         this->drawArrow(qp, (int) noeuds[i].getx()*w, (int) noeuds[i].gety()*h,(int) noeuds[j].getx()*w, (int) noeuds[j].gety()*h);

@@ -40,6 +40,7 @@ private:
     void createActions();
     void createMenus();
 
+    QString mainFolder = "/home/fdeloche/Documents/Spyder/Stage/results/";
 
     QMenu *fileMenu;
     QMenu *editMenu;

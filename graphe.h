@@ -17,6 +17,9 @@ private:
     float maxadj;
     void findMaxadj();
     QString title;
+    int color_r = 0;
+    int color_b = 0;
+    int color_v = 0;
 
 public:
     Graphe();

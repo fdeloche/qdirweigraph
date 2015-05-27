@@ -80,7 +80,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent *event)
 void MainWindow::open()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                                  "./Tests/",
+                                                                  mainFolder,
                                                                   tr("XML files (*.xml)"));
     if(!filename.isNull()){
         this->openFile(filename);
@@ -98,7 +98,7 @@ void MainWindow::saveAs(){
 
 void MainWindow::saveAsSvg(){
     QString filename = QFileDialog::getSaveFileName(this, tr("Save as svg"),
-                                                    "./Tests",
+                                                   mainFolder,
                                                     tr("SVG files (*.svg)"));
     saveSvg(filename);
 }
@@ -206,7 +206,7 @@ void MainWindow::saveFile(QString filename){
 }
 
 void MainWindow::openAndSaveSvg(){
-    QStringList sList = QFileDialog::getOpenFileNames(this, tr("Open files"), "./Tests",
+    QStringList sList = QFileDialog::getOpenFileNames(this, tr("Open files"), mainFolder,
                                                         tr("XML files (*.xml)"));
     QString folder = sList[0].section('/', 0, -2);
     QString filename = QFileDialog::getSaveFileName(this, tr("Save report"),
