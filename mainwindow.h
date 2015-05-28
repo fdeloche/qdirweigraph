@@ -33,6 +33,7 @@ private slots:
     void openAndSaveSvg();
     void newGraph();
     void addArrow();
+    void setThreshold();
 
 private:
     void openFile(QString filename);
@@ -54,6 +55,7 @@ private:
     QAction * modifyScale;
     QAction * saveSvgAct;
     QAction * openAndSaveSvgAct;
+    QAction * setThresholdAct;
 
     DrawWidget * dwid;
     GraphScale * gscale;

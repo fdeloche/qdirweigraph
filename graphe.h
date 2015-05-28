@@ -20,6 +20,7 @@ private:
     float * * adj;
     int n;
     float maxadj;
+    float threshold = 0;
     void findMaxadj();
     QString title;
     int color_r = 0;
@@ -62,6 +63,9 @@ public:
     int getp(){
         return p;
     }
+
+    float getThreshold(){return threshold;}
+    void setThreshold(float t){threshold = t;}
 
     void saveA(QString& folder);
 

@@ -103,7 +103,7 @@ void MainWindow::open()
 
 void MainWindow::saveAs(){
     QString filename = QFileDialog::getSaveFileName(this, tr("Save file"),
-                                                    "./Tests",
+                                                    mainFolder,
                                                     tr("XML files (*.xml)"));
     saveFile(filename);
 
@@ -168,6 +168,9 @@ void MainWindow::createActions()
     addArrowAct->setShortcuts(QKeySequence::SelectAll); //Ctrl + A
     addArrowAct ->setStatusTip(tr("Add a new arrow"));
     connect(addArrowAct, SIGNAL(triggered()), this, SLOT(addArrow()));
+
+    setThresholdAct = new QAction(tr("&Add a threshold"), this);
+    connect(setThresholdAct, SIGNAL(triggered()), this, SLOT(setThreshold()));
 }
 
 void MainWindow::createMenus()
@@ -183,7 +186,7 @@ void MainWindow::createMenus()
     editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu ->addAction(modifyScale);
     editMenu->addAction(addArrowAct);
-
+    editMenu->addAction(setThresholdAct);
 }
 
 void MainWindow::openFile(QString filename){
@@ -216,6 +219,15 @@ void MainWindow::changeScale(){
         graph->setMaxAdj((float) s);
         dwid->update();
         gscale ->update();
+    }
+}
+
+void MainWindow::setThreshold(){
+    bool ok;
+    if(graph){
+        float s = QInputDialog::getDouble(this, "Set a threshold value", "Threshold value : ", graph->getThreshold(), 0., 1000., 2, &ok);
+        graph->setThreshold(s);
+        dwid->update();
     }
 }
 

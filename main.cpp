@@ -8,7 +8,6 @@
 #include <stdlib.h>
 
 //TODO
-//Titre
 //coord polaires etiquettes
 
 int main(int argc, char *argv[])

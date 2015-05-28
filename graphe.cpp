@@ -50,7 +50,7 @@ Graphe::Graphe(int n, int p){
             matA[i] = new float*[n];
             for(int j=0; j<n; j++){
                 matA[i][j] = new float[p];
-                for(int k=0; k<n; k++)
+                for(int k=0; k<p; k++)
                     matA[i][j][k]=0;
             }
         }
@@ -148,6 +148,8 @@ Graphe::Graphe(QString &filename){
 void Graphe::draw(QPainter * qp){
     float w= qp->window().width()/100.;
     float  h= qp->window().height()/100.;
+    //w = std::min(w, h);
+    //h = std::min(w,h);   //a faire plus tard
     //qDebug() << w << qPrintable(" ") << h;
     qp->setBrush(Qt::black);
     int x, y;
@@ -180,7 +182,7 @@ void Graphe::draw(QPainter * qp){
     float ratio;
     for(int i =0; i<this->n; i++){
         for(int j =0; j<this->n; j++){
-            if(adj[i][j] != 0.){
+            if(adj[i][j] > threshold){
                 if(maxadj!=0){
 
                     if(type==COLORGRAPH){
@@ -308,7 +310,7 @@ void Graphe::drawArrow(QPainter * qp, int i, int j, float ww, float hh){
     float w= qp->window().width()/100.;
     float h= qp->window().height()/100.;
     w = std::min(w, h);
-    float beta = 0.4;
+    float beta = 0.55;
     float r = std::min(w*3, (float) 7.);
 
     float dy = y2 - y1;
@@ -338,8 +340,8 @@ void Graphe::drawArrow(QPainter * qp, int i, int j, float ww, float hh){
      qp->drawPath(myPath);
 
     //qp->drawLine(x1+dx, y1+dy, x2-dx, y2-dy);
-    qp->drawLine(x2+dx2, y2+dy2, x2+dx2+(int) (r*cos(alpha2 - beta)), y2 +dy2 + (int) (r*sin(alpha2 - beta)));
-    qp->drawLine(x2+dx2, y2+dy2, x2+dx2+(int) (r*cos(alpha2 + beta)), y2 + dy2 + (int) (r*sin(alpha2 + beta)));
+    qp->drawLine(x2+0.8*dx2, y2+0.8*dy2, x2+0.8*dx2+(int) (r*cos(alpha2 - beta)), y2 +0.8*dy2 + (int) (r*sin(alpha2 - beta)));
+    qp->drawLine(x2+0.8*dx2, y2+0.8*dy2, x2+0.8*dx2+(int) (r*cos(alpha2 + beta)), y2 + 0.8*dy2 + (int) (r*sin(alpha2 + beta)));
 
       
 }
@@ -370,7 +372,7 @@ void Graphe::saveGraph(QString & filename){
         TiXmlElement * elarrow;
         for(int i=0; i<n; i++){
             for(int j=0; j<n; j++){
-                if(this->adj[i][j]!=0){
+                if(this->adj[i][j]>threshold){
                     elarrow = new TiXmlElement("Arrow");
                     elarrow->SetAttribute("From", i);
                     elarrow->SetAttribute("To", j);
