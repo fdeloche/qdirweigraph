@@ -27,6 +27,7 @@ private:
     int color_v = 0;
     int type = COLORGRAPH;
     int colorscale = BLUEPURPLE;
+    int curve = 40;
 
 public:
     Graphe();
@@ -44,7 +45,10 @@ public:
     float valueEdge(int i, int j);
     void setEdgeValue(int i, int j, float f);
     void getEdgeValue(int i, int j){valueEdge(i, j);}
-    void drawArrow(QPainter * qp, int x1, int y1, int x2, int y2);
+    void drawArrow(QPainter * qp, int i, int j, float w,float h);
+    void setCurve(int curv){
+        curve = curv;
+    }
 
     void saveGraph(QString& filename);
     float getMaxAdj(){return maxadj;}

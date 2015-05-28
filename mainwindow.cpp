@@ -45,14 +45,24 @@ MainWindow::MainWindow()
     bottomFiller->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
     //bottomFiller->setMaximumHeight(50);
 
+    //QSlider *slider = new QSlider(Qt::Horizontal, this);
+    //slider->setMinimum(0);
+    //slider->setMaximum(80);
+    //connect(slider, SIGNAL(valueChanged(int)), dwid, SLOT(changeCurve(int)));
+
+
+    //slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+
     QGridLayout *layout = new QGridLayout;
     layout->setMargin(2);
     layout->addWidget(topFiller, 0, 0, 1, 2);
     layout->addWidget(gscale, 1, 0);
     layout->addWidget(dwid, 1, 1);
     layout->addWidget(bottomFiller, 2, 0, 1, 2);
+    //layout->addWidget(slider, 3, 0, 1, 2);
     //layout->setStretch(1, 2);
     layout->setColumnMinimumWidth(0, 60);
+    //layout->setRowMinimumHeight(3, 15);
     widget->setLayout(layout);
 
     createActions();

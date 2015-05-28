@@ -113,10 +113,15 @@ void Graphe::draw(QPainter * qp){
     //qDebug() << w << qPrintable(" ") << h;
     qp->setBrush(Qt::black);
     int x, y;
-    int r = std::max(4, (int) (w*0.6));
+
+    int r = 2;
+
+    //NODES
     for(int i =0; i<this->n; i++){
-        x = (int) noeuds[i].getx()*w;
-        y= (int) noeuds[i].gety()*h;
+        noeuds[i].reset();
+        x = noeuds[i].getx()*w;
+        y= noeuds[i].gety()*h;
+        //qDebug() << i << noeuds[i].getx() <<  noeuds[i].gety();
         qp->drawEllipse(x-r/2, y-r/2, r, r);
         if(x<w*50.){
             if(y<h*50.){
@@ -169,7 +174,7 @@ void Graphe::draw(QPainter * qp){
                     qp->setBrush(Qt::NoBrush);
                     }
                     if(i!=j)
-                        this->drawArrow(qp, (int) noeuds[i].getx()*w, (int) noeuds[i].gety()*h,(int) noeuds[j].getx()*w, (int) noeuds[j].gety()*h);
+                        this->drawArrow(qp, i, j, w, h);
                 }
             }
         }
@@ -188,7 +193,8 @@ Noeud * Graphe::clickNode(int x, int y, int r){
 
 
 Coord Graphe::clickEdge(int x, int y, int r){
-    int xa, xb, ya, yb, y2;
+    int xa, xb, ya, yb;
+    float y2;
     bool b;
     for(int i=0; i<n; i++){
         for(int j=0; j<n; j++){
@@ -201,9 +207,9 @@ Coord Graphe::clickEdge(int x, int y, int r){
                 if(!b){
                     if(xa == xb)
                         return Coord(i, j);
-                    y2 = (yb - ya)/(xb- xa)*(x-xa) + ya;
+                    y2 = (yb - ya)/(float)(xb- xa)*(x-xa) + ya;
                     //Manhattan distance
-                    if( abs(y-y2) <r){
+                    if( abs((float) (y-y2) ) <r){
                         return Coord(i, j);
                     }
                 }
@@ -214,6 +220,8 @@ Coord Graphe::clickEdge(int x, int y, int r){
 }
 
 Graphe::~Graphe(){
+    for(int i=0; i<n; i++)
+        noeuds[i].deleteEmpty();
     delete[] noeuds;
         for(int i =0; i<this->n; i++){
            delete[] adj[i];
@@ -255,11 +263,19 @@ void Graphe::setEdgeValue(int i, int j, float f){
 
 
 
-void Graphe::drawArrow(QPainter * qp, int x1, int y1, int x2, int y2){
+void Graphe::drawArrow(QPainter * qp, int i, int j, float ww, float hh){
 
+    int x1 =  (float) noeuds[i].getx()*ww;
+    int y1 =  (float) noeuds[i].gety()*hh;
+    int x2 = (float) noeuds[j].getx()*ww;
+    int y2 = (float) noeuds[j].gety()*hh;
 
     float alpha = (float) atan2(y2 - y1, x2 - x1);
-    float dalpha = 20./180*3.14159;
+    float dalpha = 10./180*3.14159;
+
+    float alpha1 = noeuds[i].askAngle(alpha+dalpha);
+    float alpha2 = noeuds[j].askAngle((3.14159 + alpha - dalpha));
+
     float w= qp->window().width()/100.;
     float h= qp->window().height()/100.;
     w = std::min(w, h);
@@ -268,28 +284,33 @@ void Graphe::drawArrow(QPainter * qp, int x1, int y1, int x2, int y2){
 
     float dy = y2 - y1;
     float dx = x2 - x1;
-    float dy2, dx2;
+    float dy2, dx2, dxb, dyb, dx2b, dy2b;
     float r0 = sqrt(dx*dx+dy*dy);
     if(r0 < 15)
             r = 0.15*sqrt(dx*dx+dy*dy);
 
       dx = r*1.6;
-      dx2 = dx*cos(alpha-dalpha);
-      dx *= cos(alpha+dalpha);
+      dx2 = dx*cos(alpha2);
+      dx *= cos(alpha1);
+
+      float r2 = std::min((float) curve, (float) (curve*r0/200.f));
+      dxb = r2*cos(alpha1);
+      dyb = r2*sin(alpha1);
+      dx2b = r2*cos(alpha2);
+      dy2b = r2*sin(alpha2);
+
       dy = r*1.6 ;
-      dy2 = dy*sin(alpha-dalpha);
-      dy *= sin(alpha+dalpha);
-    float r2 = std::min(5.f, 0.5f+r0/10.f);
+      dy2 = dy*sin(alpha2);
+      dy *= sin(alpha1);
     QPainterPath myPath;
     myPath.moveTo(x1+dx, y1+dy);
-    myPath.cubicTo(x1+r2*dx, y1+r2*dy, x2-r2*dx2, y2-r2*dy2, x2 - dx2, y2 - dy2);
+    myPath.cubicTo(x1+dx+dxb, y1+dy+dyb, x2+dx2+dx2b, y2+dy2+dy2b, x2 + dx2, y2 + dy2);
 
      qp->drawPath(myPath);
 
     //qp->drawLine(x1+dx, y1+dy, x2-dx, y2-dy);
-
-    qp->drawLine(x2-dx2, y2-dy2, x2-dx2+(int) (r*cos(alpha - dalpha + 3.1415 - beta)), y2 -dy2 + (int) (r*sin(alpha - dalpha + 3.1415 - beta)));
-    qp->drawLine(x2-dx2, y2-dy2, x2-dx2+(int) (r*cos(alpha - dalpha + 3.1415 + beta)), y2 - dy2 + (int) (r*sin(alpha - dalpha + 3.1415 + beta)));
+    qp->drawLine(x2+dx2, y2+dy2, x2+dx2+(int) (r*cos(alpha2 - beta)), y2 +dy2 + (int) (r*sin(alpha2 - beta)));
+    qp->drawLine(x2+dx2, y2+dy2, x2+dx2+(int) (r*cos(alpha2 + beta)), y2 + dy2 + (int) (r*sin(alpha2 + beta)));
 
       
 }

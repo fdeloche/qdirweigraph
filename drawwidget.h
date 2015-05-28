@@ -8,9 +8,14 @@
 #include "noeud.h"
 
 class DrawWidget : public QWidget{
+  //  Q_OBJECT
+
 private:
     Graphe * gr;
     Noeud * selectednode;
+
+//public slots:
+    //void changeCurve(int value);
 
 public:
     DrawWidget();

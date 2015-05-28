@@ -51,7 +51,7 @@ void DrawWidget::mouseDoubleClickEvent( QMouseEvent * e )
         int x = (int) e->pos().x()*100./w;
         int y = (int) e->pos().y()*100./h;
         if(gr){
-            Coord c = gr->clickEdge(x, y, 20);
+            Coord c = gr->clickEdge(x, y, 3);
             if(c.x != -1){
               /*  QMessageBox mess;
                  mess.setText("Edge " + QString::number(c.x) + " -> " + QString::number(c.y));
@@ -77,3 +77,12 @@ void DrawWidget::mouseReleaseEvent(QMouseEvent * event){
     selectednode = NULL;
     this->setCursor(Qt::ArrowCursor);
 }
+
+/*
+void DrawWidget::changeCurve(int value){
+    if(gr){
+        gr->setCurve(value);
+        this->update();
+    }
+}
+*/

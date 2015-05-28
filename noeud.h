@@ -3,6 +3,8 @@
 
 class Noeud{
 private:
+    bool * empty;
+    int maxarcs;
     int x;
     int y;
 
@@ -12,6 +14,10 @@ public:
     void setCoord(int x, int y);
     int getx();
     int gety();
+    void reset();
+    float askAngle(float a);
+    void deleteEmpty();
+    ~Noeud();
 };
 
 #endif // NOEUD_H
