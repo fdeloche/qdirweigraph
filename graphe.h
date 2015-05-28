@@ -28,9 +28,14 @@ private:
     int type = COLORGRAPH;
     int colorscale = BLUEPURPLE;
     int curve = 40;
+    //Associated matrix
+    int p = 1;
+    float * * * matA = NULL;
 
 public:
     Graphe();
+    Graphe(int n, int p=1);
+
     Graphe(Noeud * noeuds, float * * adj, int n);
     Graphe(QString& filename);
     QString getTitle(){return title;}
@@ -49,10 +54,22 @@ public:
     void setCurve(int curv){
         curve = curv;
     }
+    void setA(int i, int j, int k, float value){
+        if(i<n && i>=0 && j>=0 && j<n && k>=0 && k<p)
+            matA[i][j][k]=value;
+    }
+
+    int getp(){
+        return p;
+    }
+
+    void saveA(QString& folder);
 
     void saveGraph(QString& filename);
     float getMaxAdj(){return maxadj;}
     float setMaxAdj(float value){maxadj=value;}
+
+    void addArrow(int i, int j, float value);
     //Graphe * openGraph(std::string &filename);
 };
 

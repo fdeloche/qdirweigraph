@@ -17,6 +17,8 @@
 #include <QTextStream>
 #include <QFile>
 
+#include <cmath>
+
 MainWindow::MainWindow()
 {
     graph = NULL;
@@ -104,6 +106,8 @@ void MainWindow::saveAs(){
                                                     "./Tests",
                                                     tr("XML files (*.xml)"));
     saveFile(filename);
+
+
 }
 
 void MainWindow::saveAsSvg(){
@@ -154,11 +158,22 @@ void MainWindow::createActions()
     openAndSaveSvgAct = new QAction(tr("&Export multiple graphs as SVG"), this);
     openAndSaveSvgAct->setStatusTip((tr("Open selected graphs and export them as svg")));
     connect(openAndSaveSvgAct, SIGNAL(triggered()), this, SLOT(openAndSaveSvg()));
+
+    newGraphAct = new QAction(tr("&New graph"), this);
+    newGraphAct->setShortcuts(QKeySequence::New);
+    newGraphAct->setStatusTip(tr("Create a new graph"));
+    connect(newGraphAct, SIGNAL(triggered()), this, SLOT(newGraph()));
+
+    addArrowAct = new QAction(tr("&Add arrow"), this);
+    addArrowAct->setShortcuts(QKeySequence::SelectAll); //Ctrl + A
+    addArrowAct ->setStatusTip(tr("Add a new arrow"));
+    connect(addArrowAct, SIGNAL(triggered()), this, SLOT(addArrow()));
 }
 
 void MainWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&File"));
+    fileMenu->addAction(newGraphAct);
     fileMenu->addAction(openAct);
     fileMenu->addAction(saveAct);
     fileMenu->addAction(saveSvgAct);
@@ -167,7 +182,7 @@ void MainWindow::createMenus()
 
     editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu ->addAction(modifyScale);
-
+    editMenu->addAction(addArrowAct);
 
 }
 
@@ -211,8 +226,12 @@ void MainWindow::saveFile(QString filename){
         msgBox.exec();
         return;
     }
-    graph->saveGraph(filename);
 
+    graph->saveGraph(filename);
+    if(graph->getp()>1){
+        QString folder = filename.section('/', 0, -2)+"/";
+        graph->saveA(folder);
+    }
 }
 
 void MainWindow::openAndSaveSvg(){
@@ -248,6 +267,100 @@ void MainWindow::openAndSaveSvg(){
 
     out << "</body> </html>";
     file.close();
+
+}
+
+void MainWindow::newGraph(){
+    int n = QInputDialog::getInt(this, "Number of nodes", "n : ", 1, 0, 200);
+    int p = QInputDialog::getInt(this, "Length of A(i,j) p - Arcs' weights are given by |A(i,j)| : ", "p : ", 1, 0, 50);
+
+    //if *graph exists we delete it
+    delete graph;
+
+    graph = new Graphe(n, p);
+    dwid->setGraph(graph);
+    gscale->setMaxvalue(graph->getMaxAdj());
+
+}
+
+void MainWindow::addArrow(){
+    int ni, nj;
+    float value;
+    QDialog dialog(this);
+    dialog.setWindowTitle("Add an arrow");
+    // Use a layout allowing to have a label next to each field
+    QFormLayout form(&dialog);
+
+    // Add some text above the fields
+    form.addRow(new QLabel("Add an arc i->j "));
+
+
+    QLineEdit * lineEditI = new QLineEdit(&dialog);
+    form.addRow("i : ", lineEditI);
+
+    QLineEdit * lineEditJ= new QLineEdit(&dialog);
+    form.addRow("j : ", lineEditJ);
+
+    // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                               Qt::Horizontal, &dialog);
+    form.addRow(&buttonBox);
+    QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+    // Show the dialog as modal
+    if (dialog.exec() == QDialog::Accepted) {
+        // If the user didn't dismiss the dialog, do something with the fields
+
+        ni = lineEditI->text().toInt();
+        nj = lineEditJ->text().toInt();
+    }
+
+
+    ////// VALUES
+
+    QDialog dialog2(this);
+    dialog2.setWindowTitle("Give value(s)");
+
+    QFormLayout form2(&dialog2);
+    // Add some text above the fields
+    form2.addRow(new QLabel("Values "));
+
+    // Add the lineEdits with their respective labels
+    QList<QLineEdit *> fields;
+    for(int i = 0; i < graph->getp(); ++i) {
+        QLineEdit *lineEdit = new QLineEdit(&dialog);
+        QString label = QString("k = %1").arg(i + 1);
+        form2.addRow(label, lineEdit);
+
+        fields << lineEdit;
+    }
+
+    // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
+    QDialogButtonBox buttonBox2(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                               Qt::Horizontal, &dialog);
+    form2.addRow(&buttonBox2);
+    QObject::connect(&buttonBox2, SIGNAL(accepted()), &dialog2, SLOT(accept()));
+    QObject::connect(&buttonBox2, SIGNAL(rejected()), &dialog2, SLOT(reject()));
+
+    // Show the dialog as modal
+    value = 0;
+    float value2;
+    if (dialog2.exec() == QDialog::Accepted) {
+        // If the user didn't dismiss the dialog, do something with the fields
+        int k=0;
+        foreach(QLineEdit * lineEdit, fields) {
+            value2 = lineEdit->text().toFloat();
+            if(graph->getp()>0)
+                graph->setA(nj, ni, k, value2);
+            value += value2*value2;
+            k++;
+        }
+    }
+    value = sqrt(value);
+    graph->addArrow(ni, nj, value);
+    dwid->update();
+    gscale->setMaxvalue(graph->getMaxAdj());
 
 }
 

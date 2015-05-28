@@ -12,12 +12,50 @@
 #include <QPainterPath>
 
 #include <locale>
+
+#include <cmath>
+
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
 Graphe::Graphe(){
     n=0;
     maxadj=0;
     title="";
 }
 
+Graphe::Graphe(int n, int p){
+    this->p=p;
+    this->n=n;
+    maxadj = 0;
+    title="";
+   adj = new float*[n];
+    for(int i=0; i<n; i++){
+        adj[i] = new float[n];
+        for(int j=0; j<n; j++){
+            adj[i][j] = 0;
+        }
+    }
+    noeuds = new Noeud[n];
+    for(int i=0; i<n; i++){
+        noeuds[i] = Noeud(50 + 40*cos(2*3.14159/n*i), 50 + 40*sin(2*3.14159/n*i));
+    }
+
+    if(p>1){
+        //Define matrix A
+        matA = new float**[n];
+        for(int i=0; i<n; i++){
+            matA[i] = new float*[n];
+            for(int j=0; j<n; j++){
+                matA[i][j] = new float[p];
+                for(int k=0; k<n; k++)
+                    matA[i][j][k]=0;
+            }
+        }
+      }
+}
 
 void Graphe::findMaxadj(){
     float temp = 0;
@@ -219,15 +257,6 @@ Coord Graphe::clickEdge(int x, int y, int r){
     return Coord(-1, -1);
 }
 
-Graphe::~Graphe(){
-    for(int i=0; i<n; i++)
-        noeuds[i].deleteEmpty();
-    delete[] noeuds;
-        for(int i =0; i<this->n; i++){
-           delete[] adj[i];
-        }
-        delete[] adj;
-}
 
 int Graphe::getn(){
     return n;
@@ -355,5 +384,51 @@ void Graphe::saveGraph(QString & filename){
 //Nodes
         //Coeffs (adj)
 
+}
+
+void Graphe::saveA(QString &folder){
+    std::ofstream file;
+    if(matA != NULL){
+        for(int k=0; k<p; k++){
+            file.open((folder.toStdString()+QString::number(k+1).toStdString()+".txt").c_str());
+            for(int i=0; i<n; i++){
+                for(int j=0; j<n; j++)
+                   file << QString::number(matA[i][j][k]).toStdString() << " ";
+                file << std::endl;
+                qDebug() << k;
+            }
+            file.close();
+        }
+
+    }
+}
+
+void Graphe::addArrow(int i, int j, float value){
+    if(i>=0 && i<n){
+        if(j>=0 && j<n){
+            adj[i][j] = value;
+        }
+    }
+    if(value > maxadj)
+        maxadj = value;
+}
+
+Graphe::~Graphe(){
+    for(int i=0; i<n; i++)
+        noeuds[i].deleteEmpty();
+    delete[] noeuds;
+        for(int i =0; i<this->n; i++){
+           delete[] adj[i];
+        }
+        delete[] adj;
+    if(matA != NULL){
+      for(int i=0; i<n; i++){
+          for(int j=0; j<n; j++){
+              delete[] matA[i][j];
+          }
+          delete[] matA[i];
+      }
+      delete[] matA;
+    }
 }
 

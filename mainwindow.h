@@ -31,6 +31,8 @@ private slots:
     void changeScale();
     void saveAsSvg();
     void openAndSaveSvg();
+    void newGraph();
+    void addArrow();
 
 private:
     void openFile(QString filename);
@@ -46,7 +48,9 @@ private:
     QMenu *editMenu;
 
     QAction *openAct;
+    QAction * newGraphAct;
     QAction * saveAct;
+    QAction * addArrowAct;
     QAction * modifyScale;
     QAction * saveSvgAct;
     QAction * openAndSaveSvgAct;
