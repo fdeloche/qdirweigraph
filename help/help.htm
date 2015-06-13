@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<HTML>
+   <HEAD>
+      <TITLE>
+         QDirWeighGraphs
+      </TITLE>
+   </HEAD>
+<BODY>
+   <H1>QDirWeighGraphs</H1>
+   <P><b>QDirWeighGraphs</b> is a tool to create, save and plot weighted directed graphs made with Qt C++. It is made to have good rendering while a graph has many links between its nodes. With QDirWeighGraphs, you can do some basic actions, for example you can export to .svg, change scale, modify arrow value, move nodes (mouse-action), set a threshold. It has some advanced features, as displaying two graphs with one with dashed arrows. <br>For any remark or question, please send me an e-mail at francois.deloche@outlook.fr</P>
+
+<ul>
+<li> <a href="#format">Graph format</a> 
+  <ul>
+<li> <a href="#templates">Templates</a></li>
+<li> <a href="#templates">Labels</a> </li>
+</ul>
+</li>
+<li> <a href="#display">Display</a> </li>
+<li> <a href="#export">Export</a> </li>
+</ul>
+<H2 id="format">Graph format</H2>
+
+<p>QDirWeighGraphs open and save graphs as .xml files. Graph files follow the structure above : <br>
+<code>
+&lt;?xml version="1.0" ? &gt;  <br>
+    &lt;Graph n="4" Title="Title"&gt;  <br>
+    &lt;Nodes&gt; <br>
+    &lt;Node id="0" Label="A" x="90" y="50" /&gt;  <br>
+&lt;Node id="1" Label="B" x="50" y="90" /&gt;  <br>
+&lt;Node id="2" Label="C" x="10" y="50" /&gt; <br>
+&lt;Node id="3" Label="D" x="50" y="10" /&gt; <br>
+&lt;/Nodes&gt; <br>
+    &lt;Arrows&gt;&lt;Arrow From="0" To="1" Value="0.0171911707593" /&gt;  <br>
+&lt;Arrow From="0" To="2" Value="0.0408503376768" /&gt;  <br>
+&lt;Arrow From="1" To="2" Value="0.0430739106016" /&gt;  <br>
+&lt;Arrow From="3" To="2" Value="0.0272628871577" /&gt; <br>
+&lt;Arrow From="0" To="3" Value="0.0355190087615" /&gt; <br>
+&lt;Arrow From="2" To="3" Value="0.0599855240044" /&gt; <br>
+&lt;Arrow From="3" To="3" Value="0.0195628760398" /&gt; <br>
+&lt;/Arrows&gt;  <br>
+&lt;Config ScaleMax="0.0773425122836" /&gt;&lt;/Graph&gt; <br>
+</code>
+
+
+n is the number of nodes. Nodes id are allways 0-(n-1). "x" and "y" are nodes coord  (0-->100).  ScaleMax, labels and Title are optional. If a node or all nodes are not specified, QDirWeighGraphs will place it automatically on a circle.
+
+Result : <br>
+</p>
+
+<img src='qrc:/help/res.png'/> 
+
+
+
+
+<H3 id="templates">Templates</H3>
+
+<p>.xml files can be used as a template for an other graph (File -> use a template). It follows the same structure but will only use data about the position of nodes and labels</p>
+
+<H3 id="labels">Labels</H3>
+
+<p>Labels can be imported directly with the (.xml) file or from a .txt file in which each line has the name of a node, in order. (Edit -> Add labels)<br>
+
+<code>
+Label0 <br>
+Label1 <br>
+</code>
+</p>
+
+
+<H2 id="display">Display</H2>
+
+<p>Différents modes : blue-purple, red-green, black</p>
+
+<H2 id="export">Export</H2>
+
+<p>You can export your graph to a svg file. Note that you can modify .svg files with a svg editor (e.g Inkscape) to adapt the graph to your needs. A multi-export is available and it generates a report (.htm/.html) with all the image files.</p>
+
+
+<H2 id="display">Display 2 Graphs</H2>
+
+<p>QDirWeigh offers a special mode in which two graphs are drawn with the second graph plotted with dashed arrows.</p>
+
+
+</BODY>
+</HTML>

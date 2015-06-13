@@ -20,6 +20,8 @@
 #include <fstream>
 #include <string>
 
+#include <QFile>
+
 Graphe::Graphe(){
     n=0;
     maxadj=0;
@@ -96,6 +98,16 @@ Graphe::Graphe(QString &filename){
             }
             noeuds = new Noeud[n];
 
+            labels = new QString[n];
+
+            //Init
+            for(int i=0; i<n; i++)
+                labels[i]=QString();
+
+            for(int i=0; i<n; i++){
+                noeuds[i] = Noeud(50 + 40*cos(2*3.14159/n*i), 50 + 40*sin(2*3.14159/n*i));
+            }
+
             adj = new float*[n];
 
             for(int i=0; i<n; i++){
@@ -106,6 +118,7 @@ Graphe::Graphe(QString &filename){
             }
             TiXmlElement * pRoot;
             TiXmlElement * pChildren;
+            std::string temps;
             pRoot = pGraph->FirstChildElement("Nodes");
             if(pRoot){
                 pChildren = pRoot->FirstChildElement("Node");
@@ -115,6 +128,8 @@ Graphe::Graphe(QString &filename){
                     pChildren->QueryIntAttribute("x", &x);
                     pChildren->QueryIntAttribute("y", &y);
                     noeuds[i]= Noeud(x,y);
+                    if(pChildren->QueryStringAttribute("Label", &temps) == TIXML_SUCCESS)
+                        labels[i]= QString(temps.c_str());
                     pChildren = pChildren->NextSiblingElement("Node");
                 }
             }
@@ -165,15 +180,15 @@ void Graphe::draw(QPainter * qp){
         qp->drawEllipse(x-r/2, y-r/2, r, r);
         if(x<w*50.){
             if(y<h*50.){
-                qp->drawText(x-13, y-5, QString::number(i));
+                qp->drawText(x-13, y-5, label(i));
             }else{
-                qp->drawText(x-13, y+13, QString::number(i));
+                qp->drawText(x-13, y+13, label(i));
             }
         }else{
             if(y<h*50.){
-                qp->drawText(x+5, y-5, QString::number(i));
+                qp->drawText(x+5, y-5, label(i));
              }else{
-                qp->drawText(x+5, y+13, QString::number(i));
+                qp->drawText(x+5, y+13, label(i));
             }
         }
     }
@@ -288,7 +303,8 @@ float Graphe::valueEdge(int i, int j){
 }
 
 void Graphe::setEdgeValue(int i, int j, float f){
-    adj[i][j] = f;
+    if(i>=0 && i<n && j >=0 && j<n)
+        adj[i][j] = f;
     findMaxadj();
 }
 
@@ -409,10 +425,47 @@ void Graphe::addArrow(int i, int j, float value){
     if(i>=0 && i<n){
         if(j>=0 && j<n){
             adj[i][j] = value;
+            if(value > maxadj)
+                maxadj = value;
         }
     }
-    if(value > maxadj)
-        maxadj = value;
+
+}
+
+QString Graphe::label(int i){
+    if(labels == NULL)
+        return QString::number(i);
+    if(labels[i].isEmpty())
+        return QString::number(i);
+    return labels[i];
+}
+
+void Graphe::importLabels(QString &filename){
+    delete[] labels;
+    labels = new QString[n];
+
+    //Init
+    for(int i=0; i<n; i++)
+        labels[i]=QString();
+
+    int i =0;
+
+    QFile file(filename);
+    if(!file.open(QIODevice::ReadOnly)) {
+        //QMessageBox::information(0, "error", file.errorString());
+    }
+
+    QTextStream in(&file);
+
+    while (!in.atEnd() && i<n )
+      {
+        labels[i] = in.readLine();
+        ;
+        i++;
+      }
+
+    file.close();
+
 }
 
 Graphe::~Graphe(){
@@ -432,5 +485,6 @@ Graphe::~Graphe(){
       }
       delete[] matA;
     }
+     delete[] labels;
 }
 

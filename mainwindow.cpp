@@ -76,6 +76,8 @@ MainWindow::MainWindow()
     setWindowTitle(tr("Graphe - Visionneur"));
     setMinimumSize(160, 160);
     resize(480, 320);
+
+    helpWid = new HelpWidget();
 }
 
 /*
@@ -166,11 +168,19 @@ void MainWindow::createActions()
 
     addArrowAct = new QAction(tr("&Add arrow"), this);
     addArrowAct->setShortcuts(QKeySequence::SelectAll); //Ctrl + A
-    addArrowAct ->setStatusTip(tr("Add a new arrow"));
+    addArrowAct ->setStatusTip(tr("Add a new arrow or set value for an existing arrow"));
     connect(addArrowAct, SIGNAL(triggered()), this, SLOT(addArrow()));
+
+    setLabelAct = new QAction(tr("&Add labels"), this);
+    setLabelAct->setStatusTip(tr("Add labels for nodes"));
+    connect(setLabelAct, SIGNAL(triggered()), this, SLOT(setLabels()));
 
     setThresholdAct = new QAction(tr("&Add a threshold"), this);
     connect(setThresholdAct, SIGNAL(triggered()), this, SLOT(setThreshold()));
+
+    showHelpAct = new QAction(tr("&Help"), this);
+    showHelpAct->setStatusTip(tr("Show help"));
+    connect(showHelpAct, SIGNAL(triggered()), this, SLOT(showHelp()));
 }
 
 void MainWindow::createMenus()
@@ -187,6 +197,11 @@ void MainWindow::createMenus()
     editMenu ->addAction(modifyScale);
     editMenu->addAction(addArrowAct);
     editMenu->addAction(setThresholdAct);
+    editMenu->addAction(setLabelAct);
+
+    helpMenu = menuBar()->addMenu(tr("&Help"));
+    helpMenu->addAction(showHelpAct);
+
 }
 
 void MainWindow::openFile(QString filename){
@@ -228,6 +243,16 @@ void MainWindow::setThreshold(){
         float s = QInputDialog::getDouble(this, "Set a threshold value", "Threshold value : ", graph->getThreshold(), 0., 1000., 2, &ok);
         graph->setThreshold(s);
         dwid->update();
+    }
+}
+
+void MainWindow::setLabels(){
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open labels file"),
+                                                                  mainFolder,
+                                                                  tr("Text files (*.txt)"));
+    if(!filename.isNull()){
+        this->graph->importLabels(filename);
+        this->update();
     }
 }
 
@@ -296,6 +321,12 @@ void MainWindow::newGraph(){
 }
 
 void MainWindow::addArrow(){
+    if(!graph){
+        QMessageBox msgBox;
+        msgBox.setText("There is no graph");
+        msgBox.exec();
+        return;
+    }
     int ni, nj;
     float value;
     QDialog dialog(this);
@@ -363,7 +394,7 @@ void MainWindow::addArrow(){
         int k=0;
         foreach(QLineEdit * lineEdit, fields) {
             value2 = lineEdit->text().toFloat();
-            if(graph->getp()>0)
+            if(graph->getp()>1)
                 graph->setA(nj, ni, k, value2);
             value += value2*value2;
             k++;
@@ -376,6 +407,14 @@ void MainWindow::addArrow(){
 
 }
 
+void MainWindow::showHelp(){
+    helpWid->setGeometry(200, 200, 800, 600);
+    helpWid->loadPage();
+    helpWid->show();
+
+}
+
 MainWindow::~MainWindow(){
+    delete helpWid; //no parent
     delete graph;
 }

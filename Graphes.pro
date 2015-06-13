@@ -1,5 +1,6 @@
 QT += widgets \
-    svg
+    svg \
+    webkit
 SOURCES += \
     main.cpp \
     drawwidget.cpp \
@@ -8,7 +9,8 @@ SOURCES += \
     mainwindow.cpp \
     coord.cpp \
     graphexml.cpp \
-    graphscale.cpp
+    graphscale.cpp \
+    helpwidget.cpp
 
 HEADERS += \
     drawwidget.h \
@@ -18,6 +20,10 @@ HEADERS += \
     coord.h \
     coord.h \
     graphexml.h \
-    graphscale.h
+    graphscale.h \
+    helpwidget.h
 
 LIBS+= -ltinyxml
+
+RESOURCES += \
+    ressources.qrc

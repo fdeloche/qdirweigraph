@@ -32,6 +32,8 @@ private:
     //Associated matrix
     int p = 1;
     float * * * matA = NULL;
+    QString * labels = NULL;
+    QString label(int i);
 
 public:
     Graphe();
@@ -70,6 +72,7 @@ public:
     void saveA(QString& folder);
 
     void saveGraph(QString& filename);
+    void importLabels(QString & filename);
     float getMaxAdj(){return maxadj;}
     float setMaxAdj(float value){maxadj=value;}
 

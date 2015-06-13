@@ -8,7 +8,9 @@
 #include <stdlib.h>
 
 //TODO
-//coord polaires etiquettes
+//modes
+//able/disable actions
+//display title nodes
 
 int main(int argc, char *argv[])
 {

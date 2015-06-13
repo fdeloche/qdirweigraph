@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>help/res.png</file>
+    <file>help/help.htm</file>
+</qresource>
+</RCC>

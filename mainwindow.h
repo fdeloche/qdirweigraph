@@ -9,6 +9,8 @@
 
 #include "graphscale.h"
 
+#include "helpwidget.h"
+
 class QAction;
 class QActionGroup;
 class QLabel;
@@ -34,6 +36,8 @@ private slots:
     void newGraph();
     void addArrow();
     void setThreshold();
+    void setLabels();
+    void showHelp();
 
 private:
     void openFile(QString filename);
@@ -47,6 +51,7 @@ private:
 
     QMenu *fileMenu;
     QMenu *editMenu;
+    QMenu *helpMenu;
 
     QAction *openAct;
     QAction * newGraphAct;
@@ -56,8 +61,11 @@ private:
     QAction * saveSvgAct;
     QAction * openAndSaveSvgAct;
     QAction * setThresholdAct;
+    QAction * setLabelAct;
+    QAction * showHelpAct;
 
     DrawWidget * dwid;
+    HelpWidget * helpWid;
     GraphScale * gscale;
     Graphe * graph;
     //QLabel *infoLabel;
