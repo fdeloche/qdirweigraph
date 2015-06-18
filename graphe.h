@@ -69,12 +69,14 @@ public:
     float getThreshold(){return threshold;}
     void setThreshold(float t){threshold = t;}
 
+    void importTemplate(QString & filename);
+
     void saveA(QString& folder);
 
     void saveGraph(QString& filename);
     void importLabels(QString & filename);
     float getMaxAdj(){return maxadj;}
-    float setMaxAdj(float value){maxadj=value;}
+    void setMaxAdj(float value){maxadj=value;}
 
     void addArrow(int i, int j, float value);
     //Graphe * openGraph(std::string &filename);

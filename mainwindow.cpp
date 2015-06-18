@@ -96,6 +96,10 @@ void MainWindow::open()
     QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                                   mainFolder,
                                                                   tr("XML files (*.xml)"));
+
+    if(!graph)
+        unlockActions();
+
     if(!filename.isNull()){
         this->openFile(filename);
         this->update();
@@ -148,14 +152,17 @@ void MainWindow::createActions()
     saveAct->setShortcuts(QKeySequence::SaveAs);
     saveAct->setStatusTip(tr("Save graph as..."));
     connect(saveAct, SIGNAL(triggered()), this, SLOT(saveAs()));
+    saveAct->setEnabled(false);
 
     modifyScale = new QAction(tr("&Change scale"), this);
     modifyScale->setStatusTip(tr("Change scale"));
     connect(modifyScale, SIGNAL(triggered()), this, SLOT(changeScale()));
+    modifyScale->setEnabled(false);
 
     saveSvgAct = new QAction(tr("&Export current graph as svg"), this);
     saveSvgAct->setStatusTip(tr("Export as SVG"));
     connect(saveSvgAct, SIGNAL(triggered()), this, SLOT(saveAsSvg()));
+    saveSvgAct->setEnabled(false);
 
     openAndSaveSvgAct = new QAction(tr("&Export multiple graphs as SVG"), this);
     openAndSaveSvgAct->setStatusTip((tr("Open selected graphs and export them as svg")));
@@ -166,21 +173,30 @@ void MainWindow::createActions()
     newGraphAct->setStatusTip(tr("Create a new graph"));
     connect(newGraphAct, SIGNAL(triggered()), this, SLOT(newGraph()));
 
+
     addArrowAct = new QAction(tr("&Add arrow"), this);
     addArrowAct->setShortcuts(QKeySequence::SelectAll); //Ctrl + A
     addArrowAct ->setStatusTip(tr("Add a new arrow or set value for an existing arrow"));
     connect(addArrowAct, SIGNAL(triggered()), this, SLOT(addArrow()));
+    addArrowAct->setEnabled(false);
 
     setLabelAct = new QAction(tr("&Add labels"), this);
     setLabelAct->setStatusTip(tr("Add labels for nodes"));
     connect(setLabelAct, SIGNAL(triggered()), this, SLOT(setLabels()));
+    setLabelAct->setEnabled(false);
 
     setThresholdAct = new QAction(tr("&Add a threshold"), this);
     connect(setThresholdAct, SIGNAL(triggered()), this, SLOT(setThreshold()));
+    setThresholdAct->setEnabled(false);
 
     showHelpAct = new QAction(tr("&Help"), this);
     showHelpAct->setStatusTip(tr("Show help"));
     connect(showHelpAct, SIGNAL(triggered()), this, SLOT(showHelp()));
+
+    importTemplateAct = new QAction(tr("&Import template"), this);
+    importTemplateAct->setStatusTip(tr("Import nodes position from another graph"));
+    connect(importTemplateAct, SIGNAL(triggered()), this, SLOT(importTemplate()));
+    importTemplateAct->setEnabled(false);
 }
 
 void MainWindow::createMenus()
@@ -198,10 +214,23 @@ void MainWindow::createMenus()
     editMenu->addAction(addArrowAct);
     editMenu->addAction(setThresholdAct);
     editMenu->addAction(setLabelAct);
+    editMenu->addAction(importTemplateAct);
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(showHelpAct);
 
+}
+
+
+void MainWindow::unlockActions(){
+        saveAct->setEnabled(true);
+        modifyScale->setEnabled(true);
+        saveSvgAct->setEnabled(true);
+        addArrowAct->setEnabled(true);
+        setLabelAct->setEnabled(true);
+        setThresholdAct->setEnabled(true);
+        showHelpAct->setEnabled(true);
+        importTemplateAct->setEnabled(true);
 }
 
 void MainWindow::openFile(QString filename){
@@ -211,6 +240,7 @@ void MainWindow::openFile(QString filename){
     graph = new Graphe(filename);
     dwid->setGraph(graph);
     gscale->setMaxvalue(graph->getMaxAdj());
+
 
     //DrawWidget dwid(gr);
     //dwid.show();
@@ -224,6 +254,18 @@ void MainWindow::openFile(QString filename){
 void MainWindow::update(){
     dwid->update();
     gscale->update();
+}
+
+void MainWindow::importTemplate(){
+    if(graph){
+        QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                        mainFolder,
+                                                        tr("XML files (*.xml)"));
+        if(!filename.isNull()){
+            graph->importTemplate(filename);
+            this->update();
+        }
+    }
 }
 
 void MainWindow::changeScale(){
@@ -311,12 +353,17 @@ void MainWindow::newGraph(){
     int n = QInputDialog::getInt(this, "Number of nodes", "n : ", 1, 0, 200);
     int p = QInputDialog::getInt(this, "Length of A(i,j) p - Arcs' weights are given by |A(i,j)| : ", "p : ", 1, 0, 50);
 
+    if(!graph)
+        unlockActions();
+
     //if *graph exists we delete it
     delete graph;
 
     graph = new Graphe(n, p);
     dwid->setGraph(graph);
     gscale->setMaxvalue(graph->getMaxAdj());
+
+
 
 }
 

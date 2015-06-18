@@ -38,6 +38,7 @@ private slots:
     void setThreshold();
     void setLabels();
     void showHelp();
+    void importTemplate();
 
 private:
     void openFile(QString filename);
@@ -46,6 +47,7 @@ private:
     void saveFile(QString filename);
     void createActions();
     void createMenus();
+    void unlockActions();
 
     QString mainFolder = "/home/fdeloche/Documents/Spyder/Stage/results/";
 
@@ -63,6 +65,7 @@ private:
     QAction * setThresholdAct;
     QAction * setLabelAct;
     QAction * showHelpAct;
+    QAction * importTemplateAct;
 
     DrawWidget * dwid;
     HelpWidget * helpWid;

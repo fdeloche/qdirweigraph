@@ -26,6 +26,7 @@ Graphe::Graphe(){
     n=0;
     maxadj=0;
     title="";
+
 }
 
 Graphe::Graphe(int n, int p){
@@ -44,6 +45,12 @@ Graphe::Graphe(int n, int p){
     for(int i=0; i<n; i++){
         noeuds[i] = Noeud(50 + 40*cos(2*3.14159/n*i), 50 + 40*sin(2*3.14159/n*i));
     }
+
+    labels = new QString[n];
+
+    //Init
+    for(int i=0; i<n; i++)
+        labels[i]=QString();
 
     if(p>1){
         //Define matrix A
@@ -72,6 +79,12 @@ void Graphe::findMaxadj(){
 
 Graphe::Graphe(Noeud * noeuds, float * * adj, int n):noeuds(noeuds), adj(adj), n(n){
     this->findMaxadj();
+
+    labels = new QString[n];
+
+    //Init
+    for(int i=0; i<n; i++)
+        labels[i]=QString();
 }
 
 Graphe::Graphe(QString &filename){
@@ -376,6 +389,8 @@ void Graphe::saveGraph(QString & filename){
         for(int i=0; i<n; i++){
             elnode = new TiXmlElement("Node");
             elnode->SetAttribute("id", i);
+            if(!labels[i].isEmpty())
+                elnode->SetAttribute("Label", labels[i].toStdString());
             elnode->SetAttribute("x", this->noeuds[i].getx());
             elnode->SetAttribute("y", this->noeuds[i].gety());
             elnodes->LinkEndChild(elnode);
@@ -398,6 +413,11 @@ void Graphe::saveGraph(QString & filename){
             }
         }
         elgraphe->LinkEndChild(elarrows);
+
+        TiXmlElement * elconfig = new TiXmlElement("Config");
+        elconfig->SetAttribute("ScaleMax", GrapheXml::num2str<float>(maxadj, 7));
+        elgraphe->LinkEndChild(elconfig);
+
         doc.SaveFile(filename.toStdString());
 //Nodes
         //Coeffs (adj)
@@ -466,6 +486,42 @@ void Graphe::importLabels(QString &filename){
 
     file.close();
 
+}
+
+
+void Graphe::importTemplate(QString & filename){
+
+    TiXmlDocument doc(filename.toStdString());
+    if(doc.LoadFile()){
+        //TiXmlHandle hDoc(&doc);
+        TiXmlElement * pRoot;
+        TiXmlElement * pChildren;
+        std::string temps;
+        TiXmlElement * pGraph;
+        pGraph = doc.FirstChildElement("Graph");
+        if(pGraph){
+            pRoot = pGraph->FirstChildElement("Nodes");
+            int i, x, y;
+            if(pRoot){
+                pChildren = pRoot->FirstChildElement("Node");
+                while(pChildren){
+                    pChildren->QueryIntAttribute("id", &i);
+                    if(i<n){
+                        pChildren->QueryIntAttribute("x", &x);
+                        pChildren->QueryIntAttribute("y", &y);
+                        noeuds[i]= Noeud(x,y);
+                        //qDebug()<<i;
+                        if(pChildren->QueryStringAttribute("Label", &temps) == TIXML_SUCCESS){
+                            //qDebug()<<QString(temps.c_str());
+                            labels[i]= QString(temps.c_str());
+
+                        }
+                    }
+                    pChildren = pChildren->NextSiblingElement("Node");
+                }
+            }
+        }
+    }
 }
 
 Graphe::~Graphe(){
