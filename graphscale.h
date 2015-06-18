@@ -4,14 +4,14 @@
 #include <QWidget>
 #include <QPainter>
 
-#include "graphe.h" //flags
+#include "graphoptions.h"
+//flags
 
 class GraphScale : public QWidget{
 private:
     float maxvalue = 0;
     float maxthick = 5;
-    int type = COLORGRAPH;
-    int colorscale = BLUEPURPLE;
+    int type = BLUEPURPLE;
 
 public:
     GraphScale();
@@ -25,6 +25,9 @@ public:
     float getMaxvalue(){
         return maxvalue;
     }
+
+    void setOptions(graphOptions &options);
+
 
     protected:
     void paintEvent(QPaintEvent * event);

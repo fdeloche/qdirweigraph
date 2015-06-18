@@ -9,8 +9,8 @@
 
 //TODO
 //modes
-//able/disable actions
-//display title nodes
+//display title
+// curve
 
 int main(int argc, char *argv[])
 {

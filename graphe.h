@@ -8,11 +8,7 @@
 
 #include <QString>
 
-#define COLORGRAPH 1
-#define BLACKGRAPH 0
-
-#define GREENRED 0
-#define BLUEPURPLE 1
+#include "graphoptions.h"
 
 class Graphe{
 private:
@@ -26,9 +22,10 @@ private:
     int color_r = 0;
     int color_b = 0;
     int color_v = 0;
-    int type = COLORGRAPH;
-    int colorscale = BLUEPURPLE;
+    int type = BLUEPURPLE;
     int curve = 40;
+    bool drawLabel = true;
+    bool displayTitle = false;
     //Associated matrix
     int p = 1;
     float * * * matA = NULL;
@@ -42,11 +39,13 @@ public:
     Graphe(Noeud * noeuds, float * * adj, int n);
     Graphe(QString& filename);
     QString getTitle(){return title;}
+    void setTitle(QString& t){title=t;}
 
     void draw(QPainter * qp);
     int getn();
     void printNodes(QTextStream& stream);
     void printCoeffs(QTextStream& stream);
+
     ~Graphe();
     Noeud * clickNode(int x, int y, int r);
     Coord clickEdge(int x, int y, int r);
@@ -79,6 +78,7 @@ public:
     void setMaxAdj(float value){maxadj=value;}
 
     void addArrow(int i, int j, float value);
+    void setOptions(graphOptions & options);
     //Graphe * openGraph(std::string &filename);
 };
 

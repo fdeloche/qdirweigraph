@@ -29,15 +29,15 @@ void GraphScale::paint(QPainter *qp){
         color_b = 0;
 
 
-        if(type==COLORGRAPH){
+        if(type==GREENRED || type==BLUEPURPLE){
          //if adj[i][j]<0.5 maxadj, change alpha, >0.6 ou >0.5change color < 1 change color and thickness
         alpha = (ratio<0.8) ? 255*(ratio/(0.8)) : 255;
-        if(colorscale==GREENRED){
+        if(type==GREENRED){
         color_r = (ratio<0.5) ? 0 : 255.*(ratio-0.3)/0.7;
         color_v = (ratio<0.5) ? 175 : 175 - 175*(ratio-0.3)/0.7;
         color_b = 0;
         }
-        if(colorscale==BLUEPURPLE){
+        if(type==BLUEPURPLE){
             color_r = (ratio<0.6) ? 40 : 40 + 215.*(ratio-0.5)/0.5;
             color_v=100;
             //color_v = (ratio<0.3) ? 175 : 175 - 175*(ratio-0.3)/0.7;
@@ -49,6 +49,9 @@ void GraphScale::paint(QPainter *qp){
         qp->setBrush(Qt::NoBrush);
         }
         if(type==BLACKGRAPH){
+         color_b = 0;
+         color_r=0;
+         color_v = 0;
             //if adj[i][j]<0.3 maxadj, change alpha, else change thickness (grosso modo)
         alpha = (ratio<0.3) ? 255*((0.3*ratio)) : 255;
         thick = (ratio<0.2) ? 0.5 : ratio*5.;
@@ -62,4 +65,8 @@ void GraphScale::paint(QPainter *qp){
         y += h/(2*nrep);
     }
     }
+}
+
+void GraphScale::setOptions(graphOptions &options){
+    type=options.style;
 }

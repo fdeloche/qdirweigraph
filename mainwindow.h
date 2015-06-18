@@ -10,6 +10,7 @@
 #include "graphscale.h"
 
 #include "helpwidget.h"
+#include "graphoptions.h"
 
 class QAction;
 class QActionGroup;
@@ -39,8 +40,11 @@ private slots:
     void setLabels();
     void showHelp();
     void importTemplate();
+    void changeDisplay();
+    void changeTitle();
 
 private:
+    bool svgOptions();
     void openFile(QString filename);
     void update();
     void saveSvg(QString filename);
@@ -53,6 +57,7 @@ private:
 
     QMenu *fileMenu;
     QMenu *editMenu;
+    QMenu *displayMenu;
     QMenu *helpMenu;
 
     QAction *openAct;
@@ -66,13 +71,20 @@ private:
     QAction * setLabelAct;
     QAction * showHelpAct;
     QAction * importTemplateAct;
+    QAction * displayAct;
+    QAction * changeTitleAct;
 
     DrawWidget * dwid;
     HelpWidget * helpWid;
     GraphScale * gscale;
     Graphe * graph;
-    //QLabel *infoLabel;
 
+    //svg export
+    int svgWidth = 600;
+    int svgHeight = 600;
+
+    //QLabel *infoLabel;
+    graphOptions options;
 };
 
 #endif

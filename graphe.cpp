@@ -183,7 +183,9 @@ void Graphe::draw(QPainter * qp){
     int x, y;
 
     int r = 2;
-
+    //TITLE
+    if(displayTitle)
+        qp->drawText(15, 15, title);
     //NODES
     for(int i =0; i<this->n; i++){
         noeuds[i].reset();
@@ -191,17 +193,19 @@ void Graphe::draw(QPainter * qp){
         y= noeuds[i].gety()*h;
         //qDebug() << i << noeuds[i].getx() <<  noeuds[i].gety();
         qp->drawEllipse(x-r/2, y-r/2, r, r);
-        if(x<w*50.){
-            if(y<h*50.){
-                qp->drawText(x-13, y-5, label(i));
+        if(drawLabel){
+            if(x<w*50.){
+                if(y<h*50.){
+                    qp->drawText(x-13, y-5, label(i));
+                }else{
+                    qp->drawText(x-13, y+13, label(i));
+                }
             }else{
-                qp->drawText(x-13, y+13, label(i));
-            }
-        }else{
-            if(y<h*50.){
-                qp->drawText(x+5, y-5, label(i));
-             }else{
-                qp->drawText(x+5, y+13, label(i));
+                if(y<h*50.){
+                    qp->drawText(x+5, y-5, label(i));
+                }else{
+                    qp->drawText(x+5, y+13, label(i));
+                }
             }
         }
     }
@@ -213,16 +217,16 @@ void Graphe::draw(QPainter * qp){
             if(adj[i][j] > threshold){
                 if(maxadj!=0){
 
-                    if(type==COLORGRAPH){
+                    if(type==GREENRED || type==BLUEPURPLE){
                      //if adj[i][j]<0.5 maxadj, change alpha, >0.6 ou >0.5change color < 1 change color and thickness
                     ratio = adj[i][j]/maxadj;
                     alpha = (ratio<0.8) ? 255*(adj[i][j]/(0.8*maxadj)) : 255;
-                    if(colorscale==GREENRED){
+                    if(type==GREENRED){
                     color_r = (ratio<0.5) ? 0 : 255.*(ratio-0.3)/0.7;
                     color_v = (ratio<0.5) ? 175 : 175 - 175*(ratio-0.3)/0.7;
                     color_b = 0;
                     }
-                    if(colorscale==BLUEPURPLE){
+                    if(type==BLUEPURPLE){
                         color_r = (ratio<0.6) ? 40 : 40 + 215.*(ratio-0.5)/0.5;
                         color_v=100;
                         //color_v = (ratio<0.3) ? 175 : 175 - 175*(ratio-0.3)/0.7;
@@ -234,6 +238,9 @@ void Graphe::draw(QPainter * qp){
                     qp->setBrush(Qt::NoBrush);
                     }
                     if(type==BLACKGRAPH){
+                        color_b = 0;
+                        color_r=0;
+                        color_v = 0;
                         //if adj[i][j]<0.3 maxadj, change alpha, else change thickness (grosso modo)
                     ratio = adj[i][j]/maxadj;
                     alpha = (ratio<0.3) ? 255*(adj[i][j]/(0.3*maxadj)) : 255;
@@ -381,6 +388,7 @@ void Graphe::saveGraph(QString & filename){
     TiXmlElement * elgraphe = new TiXmlElement( "Graph" );
         //TiXmlText * text = new TiXmlText( num2str(10) );
         elgraphe->SetAttribute("n", this->n);
+        elgraphe->SetAttribute("Title", title.toStdString());
         doc.LinkEndChild( decl );
         doc.LinkEndChild( elgraphe );
 
@@ -522,6 +530,12 @@ void Graphe::importTemplate(QString & filename){
             }
         }
     }
+}
+
+void Graphe::setOptions(graphOptions &options){
+    type = options.style;
+    drawLabel = options.displayLabels;
+    displayTitle = options.displayTitle;
 }
 
 Graphe::~Graphe(){

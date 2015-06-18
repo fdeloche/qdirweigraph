@@ -7,6 +7,8 @@
 #include "graphscale.h"
 
 #include <QInputDialog>
+#include <QComboBox>
+#include <QCheckBox>
 
 //temp
 #include "graphexml.h"
@@ -120,15 +122,16 @@ void MainWindow::saveAsSvg(){
     QString filename = QFileDialog::getSaveFileName(this, tr("Save as svg"),
                                                    mainFolder,
                                                     tr("SVG files (*.svg)"));
-    saveSvg(filename);
+    if(svgOptions())
+      saveSvg(filename);
 }
 
 void MainWindow::saveSvg(QString filename){
     if(graph){
     QSvgGenerator generator;
         generator.setFileName(filename);
-        generator.setSize(QSize(600, 600));
-        generator.setViewBox(QRect(0, 0, 600, 600));
+        generator.setSize(QSize(svgWidth, svgHeight));
+        generator.setViewBox(QRect(0, 0,svgWidth, svgHeight));
         generator.setTitle(tr("Graphe"));
         generator.setDescription(tr("An SVG drawing created by the Qt SVG Generator "));
 
@@ -197,6 +200,14 @@ void MainWindow::createActions()
     importTemplateAct->setStatusTip(tr("Import nodes position from another graph"));
     connect(importTemplateAct, SIGNAL(triggered()), this, SLOT(importTemplate()));
     importTemplateAct->setEnabled(false);
+
+    displayAct = new QAction(tr("&Display"), this);
+    displayAct->setStatusTip("& Configure display");
+    connect(displayAct, SIGNAL(triggered()), this, SLOT(changeDisplay() ));
+
+    changeTitleAct = new QAction(tr("Change title"), this);
+    connect(changeTitleAct, SIGNAL(triggered()), this, SLOT(changeTitle()) );
+    changeTitleAct->setEnabled(false);
 }
 
 void MainWindow::createMenus()
@@ -215,6 +226,10 @@ void MainWindow::createMenus()
     editMenu->addAction(setThresholdAct);
     editMenu->addAction(setLabelAct);
     editMenu->addAction(importTemplateAct);
+    editMenu->addAction(changeTitleAct);
+
+    displayMenu = menuBar()->addMenu(tr("&Display"));
+    displayMenu->addAction(displayAct);
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(showHelpAct);
@@ -231,6 +246,13 @@ void MainWindow::unlockActions(){
         setThresholdAct->setEnabled(true);
         showHelpAct->setEnabled(true);
         importTemplateAct->setEnabled(true);
+        changeTitleAct->setEnabled(true);
+}
+
+void MainWindow::changeTitle(){
+    QString title = QInputDialog::getText(this, tr("Set Title"), tr("Title : "), QLineEdit::Normal, graph->getTitle());
+    graph->setTitle(title);
+    this->update();
 }
 
 void MainWindow::openFile(QString filename){
@@ -252,8 +274,12 @@ void MainWindow::openFile(QString filename){
 }
 
 void MainWindow::update(){
+    if(graph){
+    graph->setOptions(options);
+    gscale->setOptions(options);
     dwid->update();
     gscale->update();
+    }
 }
 
 void MainWindow::importTemplate(){
@@ -331,6 +357,7 @@ void MainWindow::openAndSaveSvg(){
 
     QString title = QInputDialog::getText(this,"Set title", "Title : ");
 
+    if(svgOptions()){
     QTextStream out(&file);
     out << "<!DOCTYPE html>" << endl << "<html><body><h1>";
     out << title << "</h1>" << endl;
@@ -346,7 +373,7 @@ void MainWindow::openAndSaveSvg(){
 
     out << "</body> </html>";
     file.close();
-
+    }
 }
 
 void MainWindow::newGraph(){
@@ -458,6 +485,90 @@ void MainWindow::showHelp(){
     helpWid->setGeometry(200, 200, 800, 600);
     helpWid->loadPage();
     helpWid->show();
+
+}
+
+bool MainWindow::svgOptions(){
+
+    QDialog dialog(this);
+    dialog.setWindowTitle("Svg options");
+    // Use a layout allowing to have a label next to each field
+    QFormLayout form(&dialog);
+
+    QLineEdit * lineEditW = new QLineEdit(&dialog);
+    lineEditW->setText(QString::number(svgWidth));
+    lineEditW->setValidator(new QIntValidator(0, 2000, this));
+    form.addRow("width : ", lineEditW);
+
+    QLineEdit * lineEditH= new QLineEdit(&dialog);
+    lineEditH->setText(QString::number(svgHeight));
+    lineEditH->setValidator(new QIntValidator(0, 2000, this));
+    form.addRow("height : ", lineEditH);
+
+    // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                               Qt::Horizontal, &dialog);
+    form.addRow(&buttonBox);
+    QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+    // Show the dialog as modal
+    if (dialog.exec() == QDialog::Accepted) {
+        // If the user didn't dismiss the dialog, do something with the fields
+
+        svgWidth = lineEditW->text().toInt();
+        svgHeight = lineEditH->text().toInt();
+
+    }
+    return QDialog::Accepted;
+
+
+}
+
+void MainWindow::changeDisplay(){
+
+
+    QDialog dialog(this);
+    dialog.setWindowTitle("Change display");
+
+    QFormLayout form(&dialog);
+
+    QComboBox * styleBox = new QComboBox(&dialog);
+
+    styleBox->addItem(tr("Blue - Purple"));
+    styleBox->addItem(tr("Green - Red"));
+    styleBox->addItem(tr("Black"));
+
+    form.addRow("Style : ", styleBox);
+
+    QCheckBox * displayNode = new QCheckBox("", this);
+    displayNode->setChecked(options.displayLabels);
+
+    form.addRow("Display labels : ", displayNode);
+
+
+    QCheckBox * displayTitle = new QCheckBox("", this);
+    displayTitle->setChecked(options.displayTitle);
+
+    form.addRow("Display title : ", displayTitle);
+
+    // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
+    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
+                               Qt::Horizontal, &dialog);
+    form.addRow(&buttonBox);
+    QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+    // Show the dialog as modal
+    if (dialog.exec() == QDialog::Accepted) {
+        qDebug()<< styleBox->currentIndex();
+        options.style = styleBox->currentIndex();
+        options.displayLabels= displayNode->isChecked();
+        options.displayTitle=displayTitle->isChecked();
+        // If the user didn't dismiss the dialog, do something with the fields
+        this->update();
+}
+
 
 }
 
