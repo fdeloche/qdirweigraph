@@ -10,7 +10,6 @@ SOURCES += \
     coord.cpp \
     graphexml.cpp \
     graphscale.cpp \
-    helpwidget.cpp \
     graphoptions.cpp
 
 HEADERS += \
@@ -22,7 +21,6 @@ HEADERS += \
     coord.h \
     graphexml.h \
     graphscale.h \
-    helpwidget.h \
     graphoptions.h
 
 LIBS+= -ltinyxml

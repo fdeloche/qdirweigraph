@@ -7,6 +7,14 @@
 #include "graphscale.h"
 
 #include <QInputDialog>
+#include <QFileDialog>
+#include <QAction>
+#include <QMenu>
+#include <QLabel>
+#include <QMenuBar>
+#include <QFormLayout>
+#include <QDialogButtonBox>
+#include <QMessageBox>
 #include <QComboBox>
 #include <QCheckBox>
 
@@ -17,9 +25,12 @@
 #include <QSvgGenerator>
 
 #include <QTextStream>
-#include <QFile>
 
 #include <cmath>
+
+#include <QGridLayout>
+#include <QStatusBar>
+
 
 MainWindow::MainWindow()
 {
@@ -79,7 +90,6 @@ MainWindow::MainWindow()
     setMinimumSize(160, 160);
     resize(480, 320);
 
-    helpWid = new HelpWidget();
 }
 
 /*
@@ -192,9 +202,6 @@ void MainWindow::createActions()
     connect(setThresholdAct, SIGNAL(triggered()), this, SLOT(setThreshold()));
     setThresholdAct->setEnabled(false);
 
-    showHelpAct = new QAction(tr("&Help"), this);
-    showHelpAct->setStatusTip(tr("Show help"));
-    connect(showHelpAct, SIGNAL(triggered()), this, SLOT(showHelp()));
 
     importTemplateAct = new QAction(tr("&Import template"), this);
     importTemplateAct->setStatusTip(tr("Import nodes position from another graph"));
@@ -231,8 +238,6 @@ void MainWindow::createMenus()
     displayMenu = menuBar()->addMenu(tr("&Display"));
     displayMenu->addAction(displayAct);
 
-    helpMenu = menuBar()->addMenu(tr("&Help"));
-    helpMenu->addAction(showHelpAct);
 
 }
 
@@ -244,7 +249,6 @@ void MainWindow::unlockActions(){
         addArrowAct->setEnabled(true);
         setLabelAct->setEnabled(true);
         setThresholdAct->setEnabled(true);
-        showHelpAct->setEnabled(true);
         importTemplateAct->setEnabled(true);
         changeTitleAct->setEnabled(true);
 }
@@ -441,12 +445,6 @@ void MainWindow::addArrow(){
 
 }
 
-void MainWindow::showHelp(){
-    helpWid->setGeometry(200, 200, 800, 600);
-    helpWid->loadPage();
-    helpWid->show();
-
-}
 
 bool MainWindow::svgOptions(){
 
@@ -541,6 +539,5 @@ void MainWindow::changeDisplay(){
 }
 
 MainWindow::~MainWindow(){
-    delete helpWid; //no parent
     delete graph;
 }

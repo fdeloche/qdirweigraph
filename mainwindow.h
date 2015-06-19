@@ -9,7 +9,7 @@
 
 #include "graphscale.h"
 
-#include "helpwidget.h"
+
 #include "graphoptions.h"
 
 #include <QIntValidator>
@@ -40,7 +40,6 @@ private slots:
     void addArrow();
     void setThreshold();
     void setLabels();
-    void showHelp();
     void importTemplate();
     void changeDisplay();
     void changeTitle();
@@ -55,12 +54,11 @@ private:
     void createMenus();
     void unlockActions();
 
-    QString mainFolder = "/home/fdeloche/Documents/Spyder/Stage/results/";
+    QString mainFolder = "/home/";
 
     QMenu *fileMenu;
     QMenu *editMenu;
     QMenu *displayMenu;
-    QMenu *helpMenu;
 
     QAction *openAct;
     QAction * newGraphAct;
@@ -71,13 +69,11 @@ private:
     QAction * openAndSaveSvgAct;
     QAction * setThresholdAct;
     QAction * setLabelAct;
-    QAction * showHelpAct;
     QAction * importTemplateAct;
     QAction * displayAct;
     QAction * changeTitleAct;
 
     DrawWidget * dwid;
-    HelpWidget * helpWid;
     GraphScale * gscale;
     Graphe * graph;
 
