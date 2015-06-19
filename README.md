@@ -7,15 +7,10 @@ Qt-based program to draw Directed Weighted Graphs.
 
 With QDirWeighGraph, you can do some basic actions, for example you can export to .svg, change scale, modify arrow value, move nodes (mouse-action), set a threshold. <br>For any remark or question, please send an e-mail at francois.deloche@outlook.fr
 
-For more details, see Help on the application.
+For more details, see [the ***QDirWeiGraph page***](http://fdeloche.github.io/qdirweigraph.html) .
 
 ## Dependencies
 
 QDirWeiGraph works with Qt and TinyXML library.
-
-## Binaries
-
-Will be added soon
-
 
 
