@@ -29,8 +29,7 @@ Graphe::Graphe(){
 
 }
 
-Graphe::Graphe(int n, int p){
-    this->p=p;
+Graphe::Graphe(int n){
     this->n=n;
     maxadj = 0;
     title="";
@@ -51,19 +50,6 @@ Graphe::Graphe(int n, int p){
     //Init
     for(int i=0; i<n; i++)
         labels[i]=QString();
-
-    if(p>1){
-        //Define matrix A
-        matA = new float**[n];
-        for(int i=0; i<n; i++){
-            matA[i] = new float*[n];
-            for(int j=0; j<n; j++){
-                matA[i][j] = new float[p];
-                for(int k=0; k<p; k++)
-                    matA[i][j][k]=0;
-            }
-        }
-      }
 }
 
 void Graphe::findMaxadj(){
@@ -432,23 +418,6 @@ void Graphe::saveGraph(QString & filename){
 
 }
 
-void Graphe::saveA(QString &folder){
-    std::ofstream file;
-    if(matA != NULL){
-        for(int k=0; k<p; k++){
-            file.open((folder.toStdString()+QString::number(k+1).toStdString()+".txt").c_str());
-            for(int i=0; i<n; i++){
-                for(int j=0; j<n; j++)
-                   file << QString::number(matA[i][j][k]).toStdString() << " ";
-                file << std::endl;
-                qDebug() << k;
-            }
-            file.close();
-        }
-
-    }
-}
-
 void Graphe::addArrow(int i, int j, float value){
     if(i>=0 && i<n){
         if(j>=0 && j<n){
@@ -546,15 +515,7 @@ Graphe::~Graphe(){
            delete[] adj[i];
         }
         delete[] adj;
-    if(matA != NULL){
-      for(int i=0; i<n; i++){
-          for(int j=0; j<n; j++){
-              delete[] matA[i][j];
-          }
-          delete[] matA[i];
-      }
-      delete[] matA;
-    }
+
      delete[] labels;
 }
 

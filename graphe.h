@@ -26,15 +26,12 @@ private:
     int curve = 40;
     bool drawLabel = true;
     bool displayTitle = false;
-    //Associated matrix
-    int p = 1;
-    float * * * matA = NULL;
     QString * labels = NULL;
     QString label(int i);
 
 public:
     Graphe();
-    Graphe(int n, int p=1);
+    Graphe(int n);
 
     Graphe(Noeud * noeuds, float * * adj, int n);
     Graphe(QString& filename);
@@ -56,21 +53,11 @@ public:
     void setCurve(int curv){
         curve = curv;
     }
-    void setA(int i, int j, int k, float value){
-        if(i<n && i>=0 && j>=0 && j<n && k>=0 && k<p)
-            matA[i][j][k]=value;
-    }
-
-    int getp(){
-        return p;
-    }
 
     float getThreshold(){return threshold;}
     void setThreshold(float t){threshold = t;}
 
     void importTemplate(QString & filename);
-
-    void saveA(QString& folder);
 
     void saveGraph(QString& filename);
     void importLabels(QString & filename);

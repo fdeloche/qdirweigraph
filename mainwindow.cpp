@@ -333,10 +333,6 @@ void MainWindow::saveFile(QString filename){
     }
 
     graph->saveGraph(filename);
-    if(graph->getp()>1){
-        QString folder = filename.section('/', 0, -2)+"/";
-        graph->saveA(folder);
-    }
 }
 
 void MainWindow::openAndSaveSvg(){
@@ -378,7 +374,6 @@ void MainWindow::openAndSaveSvg(){
 
 void MainWindow::newGraph(){
     int n = QInputDialog::getInt(this, "Number of nodes", "n : ", 1, 0, 200);
-    int p = QInputDialog::getInt(this, "Length of A(i,j) p - Arcs' weights are given by |A(i,j)| : ", "p : ", 1, 0, 50);
 
     if(!graph)
         unlockActions();
@@ -386,7 +381,7 @@ void MainWindow::newGraph(){
     //if *graph exists we delete it
     delete graph;
 
-    graph = new Graphe(n, p);
+    graph = new Graphe(n);
     dwid->setGraph(graph);
     gscale->setMaxvalue(graph->getMaxAdj());
 
@@ -413,10 +408,16 @@ void MainWindow::addArrow(){
 
 
     QLineEdit * lineEditI = new QLineEdit(&dialog);
+    lineEditI->setValidator(new QIntValidator(0, graph->getn()-1, lineEditI));
     form.addRow("i : ", lineEditI);
 
     QLineEdit * lineEditJ= new QLineEdit(&dialog);
+    lineEditJ->setValidator(new QIntValidator(0, graph->getn()-1, lineEditJ));
     form.addRow("j : ", lineEditJ);
+
+    QLineEdit * lineEditV= new QLineEdit(&dialog);
+    lineEditV->setValidator(new QDoubleValidator(0., 1000., 10, lineEditV));
+    form.addRow("value : ", lineEditV);
 
     // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
@@ -431,53 +432,12 @@ void MainWindow::addArrow(){
 
         ni = lineEditI->text().toInt();
         nj = lineEditJ->text().toInt();
+        value = lineEditV->text().toFloat();
+        graph->addArrow(ni, nj, value);
+        dwid->update();
+        gscale->setMaxvalue(graph->getMaxAdj());
     }
 
-
-    ////// VALUES
-
-    QDialog dialog2(this);
-    dialog2.setWindowTitle("Give value(s)");
-
-    QFormLayout form2(&dialog2);
-    // Add some text above the fields
-    form2.addRow(new QLabel("Values "));
-
-    // Add the lineEdits with their respective labels
-    QList<QLineEdit *> fields;
-    for(int i = 0; i < graph->getp(); ++i) {
-        QLineEdit *lineEdit = new QLineEdit(&dialog);
-        QString label = QString("k = %1").arg(i + 1);
-        form2.addRow(label, lineEdit);
-
-        fields << lineEdit;
-    }
-
-    // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
-    QDialogButtonBox buttonBox2(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-                               Qt::Horizontal, &dialog);
-    form2.addRow(&buttonBox2);
-    QObject::connect(&buttonBox2, SIGNAL(accepted()), &dialog2, SLOT(accept()));
-    QObject::connect(&buttonBox2, SIGNAL(rejected()), &dialog2, SLOT(reject()));
-
-    // Show the dialog as modal
-    value = 0;
-    float value2;
-    if (dialog2.exec() == QDialog::Accepted) {
-        // If the user didn't dismiss the dialog, do something with the fields
-        int k=0;
-        foreach(QLineEdit * lineEdit, fields) {
-            value2 = lineEdit->text().toFloat();
-            if(graph->getp()>1)
-                graph->setA(nj, ni, k, value2);
-            value += value2*value2;
-            k++;
-        }
-    }
-    value = sqrt(value);
-    graph->addArrow(ni, nj, value);
-    dwid->update();
-    gscale->setMaxvalue(graph->getMaxAdj());
 
 }
 

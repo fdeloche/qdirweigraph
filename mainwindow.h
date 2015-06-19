@@ -12,6 +12,8 @@
 #include "helpwidget.h"
 #include "graphoptions.h"
 
+#include <QIntValidator>
+
 class QAction;
 class QActionGroup;
 class QLabel;
@@ -85,6 +87,8 @@ private:
 
     //QLabel *infoLabel;
     graphOptions options;
+
+
 };
 
 #endif
