@@ -501,16 +501,23 @@ void MainWindow::changeDisplay(){
 
     form.addRow("Style : ", styleBox);
 
-    QCheckBox * displayNode = new QCheckBox("", this);
+    QCheckBox * displayNode = new QCheckBox("", &dialog);
     displayNode->setChecked(options.displayLabels);
 
     form.addRow("Display labels : ", displayNode);
 
 
-    QCheckBox * displayTitle = new QCheckBox("", this);
+    QCheckBox * displayTitle = new QCheckBox("", &dialog);
     displayTitle->setChecked(options.displayTitle);
 
     form.addRow("Display title : ", displayTitle);
+
+    QSlider * curveSlider = new QSlider(Qt::Horizontal,&dialog);
+    curveSlider->setMinimum(0);
+    curveSlider->setMaximum(120);
+    curveSlider->setValue(options.curve);
+
+    form.addRow("Curve : ", curveSlider);
 
     // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
@@ -525,6 +532,7 @@ void MainWindow::changeDisplay(){
         options.style = styleBox->currentIndex();
         options.displayLabels= displayNode->isChecked();
         options.displayTitle=displayTitle->isChecked();
+        options.curve = curveSlider->value();
         // If the user didn't dismiss the dialog, do something with the fields
         this->update();
 }

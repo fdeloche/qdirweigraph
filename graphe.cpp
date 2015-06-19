@@ -505,6 +505,7 @@ void Graphe::setOptions(graphOptions &options){
     type = options.style;
     drawLabel = options.displayLabels;
     displayTitle = options.displayTitle;
+    curve = options.curve;
 }
 
 Graphe::~Graphe(){

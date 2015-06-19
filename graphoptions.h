@@ -13,6 +13,7 @@ public:
 
 public:
     int style = BLUEPURPLE;
+    int curve = 40;
     bool displayLabels = true;
     bool displayTitle = false;
 };
