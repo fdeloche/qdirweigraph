@@ -108,7 +108,7 @@ void MainWindow::open()
     QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                                   mainFolder,
                                                                   tr("XML files (*.xml)"));
-
+mainFolder = filename.section('/', 0, -2);
     if(!graph)
         unlockActions();
 
@@ -123,6 +123,7 @@ void MainWindow::saveAs(){
     QString filename = QFileDialog::getSaveFileName(this, tr("Save file"),
                                                     mainFolder,
                                                     tr("XML files (*.xml)"));
+    mainFolder = filename.section('/', 0, -2);
     saveFile(filename);
 
 
@@ -287,10 +288,13 @@ void MainWindow::update(){
 }
 
 void MainWindow::importTemplate(){
+
     if(graph){
         QString filename = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                         mainFolder,
                                                         tr("XML files (*.xml)"));
+        mainFolder = filename.section('/', 0, -2);
+
         if(!filename.isNull()){
             graph->importTemplate(filename);
             this->update();
@@ -322,6 +326,7 @@ void MainWindow::setLabels(){
     QString filename = QFileDialog::getOpenFileName(this, tr("Open labels file"),
                                                                   mainFolder,
                                                                   tr("Text files (*.txt)"));
+    mainFolder = filename.section('/', 0, -2);
     if(!filename.isNull()){
         this->graph->importLabels(filename);
         this->update();
@@ -342,11 +347,12 @@ void MainWindow::saveFile(QString filename){
 void MainWindow::openAndSaveSvg(){
     QStringList sList = QFileDialog::getOpenFileNames(this, tr("Open files"), mainFolder,
                                                         tr("XML files (*.xml)"));
-    QString folder = sList[0].section('/', 0, -2);
+    mainFolder = sList[0].section('/', 0, -2);
     QString filename = QFileDialog::getSaveFileName(this, tr("Save report"),
-                                                    folder,
+                                                    mainFolder,
                                                     tr("HTML files (*.html)"));
-    folder = filename.section('/', 0, -2);
+    mainFolder = filename.section('/', 0, -2);
+    QString folder = mainFolder;
 
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly)) {
@@ -388,6 +394,8 @@ void MainWindow::newGraph(){
     graph = new Graphe(n);
     dwid->setGraph(graph);
     gscale->setMaxvalue(graph->getMaxAdj());
+
+    dwid->update();
 
 
 
