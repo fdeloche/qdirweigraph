@@ -25,6 +25,8 @@ private:
     int type = BLUEPURPLE;
     int curve = 40;
     int thick_opt = 20;
+    int maxarcs = 10;
+    bool fill = true;
     bool drawLabel = true;
     bool displayTitle = false;
     QString * labels = NULL;

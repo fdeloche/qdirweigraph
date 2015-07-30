@@ -15,6 +15,8 @@ public:
     int style = BLUEPURPLE;
     int curve = 40;
     int thick = 20;
+    int maxarcs = 10;
+    bool fill = true;
     bool displayLabels = true;
     bool displayTitle = false;
 };

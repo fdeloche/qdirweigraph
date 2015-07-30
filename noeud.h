@@ -17,6 +17,10 @@ public:
     void reset();
     float askAngle(float a);
     void deleteEmpty();
+    void setMaxArcs(int max){
+        maxarcs = max;
+    }
+
     ~Noeud();
 };
 

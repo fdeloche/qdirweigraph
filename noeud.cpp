@@ -6,7 +6,7 @@ Noeud::Noeud(){ maxarcs=0;}
 
 Noeud::Noeud(int x, int y):x(x), y(y){
     maxarcs = 10;
-    empty = new bool[maxarcs];
+    empty = new bool[30];
     this->reset();
 }
 

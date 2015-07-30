@@ -508,6 +508,8 @@ void MainWindow::changeDisplay(){
     styleBox->addItem(tr("Green - Red"));
     styleBox->addItem(tr("Black"));
 
+    styleBox->setCurrentIndex(options.style);
+
     form.addRow("Style : ", styleBox);
 
     QCheckBox * displayNode = new QCheckBox("", &dialog);
@@ -535,12 +537,26 @@ void MainWindow::changeDisplay(){
 
     form.addRow("Thickness : ", thicknessSlider);
 
+    QSlider * dSlider = new QSlider(Qt::Horizontal,&dialog);
+    dSlider->setTickInterval(1);
+    dSlider->setRange(5, 30);
+    dSlider->setValue(options.maxarcs);
+
+    form.addRow("Arrows per nodes : ", dSlider);
+
+
+    QCheckBox * fillArrows = new QCheckBox("", &dialog);
+    fillArrows->setChecked(options.fill);
+
+    form.addRow("Fill arrows : ", fillArrows);
+
     // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
                                Qt::Horizontal, &dialog);
     form.addRow(&buttonBox);
     QObject::connect(&buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
     QObject::connect(&buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
 
     // Show the dialog as modal
     if (dialog.exec() == QDialog::Accepted) {
@@ -550,6 +566,8 @@ void MainWindow::changeDisplay(){
         options.displayTitle=displayTitle->isChecked();
         options.curve = curveSlider->value();
         options.thick = thicknessSlider->value();
+        options.maxarcs = dSlider->value();
+        options.fill = fillArrows->isChecked();
         // If the user didn't dismiss the dialog, do something with the fields
         this->update();
 }
