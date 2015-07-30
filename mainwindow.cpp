@@ -31,6 +31,7 @@
 #include <QGridLayout>
 #include <QStatusBar>
 
+#include <locale>
 
 MainWindow::MainWindow()
 {
@@ -83,8 +84,8 @@ MainWindow::MainWindow()
     createActions();
     createMenus();
 
-    QString message = tr("A context menu is available by right-clicking");
-    statusBar()->showMessage(message);
+    //QString message = tr("A context menu is available by right-clicking");
+    //statusBar()->showMessage(message);
 
     setWindowTitle(tr("Graphe - Visionneur"));
     setMinimumSize(160, 160);
@@ -427,9 +428,12 @@ void MainWindow::addArrow(){
     lineEditJ->setValidator(new QIntValidator(0, graph->getn()-1, lineEditJ));
     form.addRow("j : ", lineEditJ);
 
+
     QLineEdit * lineEditV= new QLineEdit(&dialog);
-    lineEditV->setValidator(new QDoubleValidator(0., 1000., 10, lineEditV));
-    form.addRow("value : ", lineEditV);
+    QDoubleValidator * qdv = new QDoubleValidator(0., 1000., 10, lineEditV);
+    qdv->setLocale(QLocale::C);
+    lineEditV->setValidator(qdv);
+    form.addRow("value (use dot) : ", lineEditV);
 
     // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
@@ -441,7 +445,6 @@ void MainWindow::addArrow(){
     // Show the dialog as modal
     if (dialog.exec() == QDialog::Accepted) {
         // If the user didn't dismiss the dialog, do something with the fields
-
         ni = lineEditI->text().toInt();
         nj = lineEditJ->text().toInt();
         value = lineEditV->text().toFloat();
