@@ -528,6 +528,13 @@ void MainWindow::changeDisplay(){
 
     form.addRow("Curve : ", curveSlider);
 
+    QSlider * thicknessSlider = new QSlider(Qt::Horizontal,&dialog);
+    thicknessSlider->setMinimum(5);
+    thicknessSlider->setMaximum(80);
+    thicknessSlider->setValue(options.thick);
+
+    form.addRow("Thickness : ", thicknessSlider);
+
     // Add some standard buttons (Cancel/Ok) at the bottom of the dialog
     QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
                                Qt::Horizontal, &dialog);
@@ -542,6 +549,7 @@ void MainWindow::changeDisplay(){
         options.displayLabels= displayNode->isChecked();
         options.displayTitle=displayTitle->isChecked();
         options.curve = curveSlider->value();
+        options.thick = thicknessSlider->value();
         // If the user didn't dismiss the dialog, do something with the fields
         this->update();
 }

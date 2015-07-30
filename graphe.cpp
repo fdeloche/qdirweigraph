@@ -22,6 +22,8 @@
 
 #include <QFile>
 
+#include <QFont>
+
 Graphe::Graphe(){
     n=0;
     maxadj=0;
@@ -168,8 +170,11 @@ void Graphe::draw(QPainter * qp){
     qp->setBrush(Qt::black);
     int x, y;
 
-    int r = 2;
+    int r = std::max(2., 1.7*thick_opt/20.);
     //TITLE
+    QFont font;
+    font.setPixelSize(10+thick_opt/10);
+    qp->setFont(font);
     if(displayTitle)
         qp->drawText(15, 15, title);
     //NODES
@@ -220,6 +225,7 @@ void Graphe::draw(QPainter * qp){
                     }
                     thick = (ratio<0.2) ? 0.5 : adj[i][j]/maxadj*2.5;
                     thick = (ratio<0.6) ? thick : adj[i][j]/maxadj*6. - 2.1f;
+                    thick = thick*(thick_opt/20.);
                     qp->setPen(QPen(QColor(color_r, color_v, color_b, alpha), thick, Qt::SolidLine));
                     qp->setBrush(Qt::NoBrush);
                     }
@@ -333,7 +339,7 @@ void Graphe::drawArrow(QPainter * qp, int i, int j, float ww, float hh){
     float h= qp->window().height()/100.;
     w = std::min(w, h);
     float beta = 0.55;
-    float r = std::min(w*3, (float) 7.);
+    float r = std::min(w*3.*std::max(0.8, thick_opt/20.), (float) 7.*std::max(0.8, thick_opt/20.));
 
     float dy = y2 - y1;
     float dx = x2 - x1;
@@ -357,14 +363,22 @@ void Graphe::drawArrow(QPainter * qp, int i, int j, float ww, float hh){
       dy *= sin(alpha1);
     QPainterPath myPath;
     myPath.moveTo(x1+dx, y1+dy);
-    myPath.cubicTo(x1+dx+dxb, y1+dy+dyb, x2+dx2+dx2b, y2+dy2+dy2b, x2 + dx2, y2 + dy2);
+    //myPath.cubicTo(x1+dx+dxb, y1+dy+dyb, x2+dx2+dx2b, y2+dy2+dy2b, x2 + dx2, y2 + dy2);
+    myPath.cubicTo(x1+dx+dxb, y1+dy+dyb, x2+1.5*dx2+dx2b, y2+1.5*dy2+dy2b, x2 + 1.5*dx2, y2 + 1.5*dy2);
 
      qp->drawPath(myPath);
 
     //qp->drawLine(x1+dx, y1+dy, x2-dx, y2-dy);
-    qp->drawLine(x2+0.8*dx2, y2+0.8*dy2, x2+0.8*dx2+(int) (r*cos(alpha2 - beta)), y2 +0.8*dy2 + (int) (r*sin(alpha2 - beta)));
-    qp->drawLine(x2+0.8*dx2, y2+0.8*dy2, x2+0.8*dx2+(int) (r*cos(alpha2 + beta)), y2 + 0.8*dy2 + (int) (r*sin(alpha2 + beta)));
-
+     qp->setBrush(QBrush(qp->pen().color()));
+     qp->setPen(Qt::NoPen);
+     r = r*1.5;
+     QPointF points[3] = {     QPointF(x2+0.8*dx2, y2+0.8*dy2),
+      QPointF(x2+0.8*dx2+(int) (r*cos(alpha2 - beta)), y2 +0.8*dy2 + (int) (r*sin(alpha2 - beta))),
+      QPointF(x2+0.8*dx2+(int) (r*cos(alpha2 + beta)), y2 + 0.8*dy2 + (int) (r*sin(alpha2 + beta)))
+     };
+     qp->drawPolygon(points, 3);
+     //qp->drawLine(x2+0.8*dx2, y2+0.8*dy2, x2+0.8*dx2+(int) (r*cos(alpha2 - beta)), y2 +0.8*dy2 + (int) (r*sin(alpha2 - beta)));
+    // qp->drawLine(x2+0.8*dx2, y2+0.8*dy2, x2+0.8*dx2+(int) (r*cos(alpha2 + beta)), y2 + 0.8*dy2 + (int) (r*sin(alpha2 + beta)));
       
 }
 
@@ -506,6 +520,7 @@ void Graphe::setOptions(graphOptions &options){
     drawLabel = options.displayLabels;
     displayTitle = options.displayTitle;
     curve = options.curve;
+    thick_opt = options.thick;
 }
 
 Graphe::~Graphe(){

@@ -14,6 +14,7 @@ public:
 public:
     int style = BLUEPURPLE;
     int curve = 40;
+    int thick = 20;
     bool displayLabels = true;
     bool displayTitle = false;
 };
